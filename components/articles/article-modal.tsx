@@ -1,0 +1,196 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  Input,
+  Textarea,
+} from "@nextui-org/react";
+import { IArticle } from "@/helpers/types";
+import { createArticle, updateArticle } from "@/actions/article.action";
+import { uploadImage } from "@/actions/user.action";
+import { toast } from "sonner";
+import dynamic from "next/dynamic";
+
+const RichTextEditor = dynamic(() => import("./rich-text-editor"), {
+  ssr: false,
+});
+
+interface ArticleModalProps {
+  article: IArticle | null;
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export const ArticleModal: React.FC<ArticleModalProps> = ({
+  article,
+  isOpen,
+  onClose,
+}) => {
+  const [formData, setFormData] = useState({
+    title: "",
+    detail: "",
+    content: "",
+    image: "",
+  });
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (article) {
+      setFormData({
+        title: article.title,
+        detail: article.detail,
+        content: article.content,
+        image: article.image,
+      });
+    } else {
+      setFormData({
+        title: "",
+        detail: "",
+        content: "",
+        image: "",
+      });
+    }
+    setImageFile(null);
+  }, [article, isOpen]);
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!formData.title || !formData.detail || !formData.content) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      let imageUrl = formData.image;
+
+      // Upload new image if provided
+      if (imageFile) {
+        const uploadResult = await uploadImage(imageFile);
+        if (uploadResult.error) {
+          toast.error(uploadResult.error);
+          setIsLoading(false);
+          return;
+        }
+        imageUrl = uploadResult.data?.url || "";
+      }
+
+      const articleData = {
+        title: formData.title,
+        detail: formData.detail,
+        content: formData.content,
+        image: imageUrl,
+      };
+
+      let result;
+      if (article) {
+        result = await updateArticle(article.id, articleData);
+      } else {
+        result = await createArticle(articleData);
+      }
+
+      if (result.error) {
+        toast.error(result.error);
+      } else {
+        toast.success(article ? "Article updated successfully" : "Article created successfully");
+        onClose();
+        window.location.reload();
+      }
+    } catch (error) {
+      toast.error("An error occurred");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} size="5xl" scrollBehavior="inside">
+      <ModalContent>
+        <ModalHeader className="flex flex-col gap-1">
+          {article ? "Edit Article" : "Create Article"}
+        </ModalHeader>
+        <ModalBody>
+          <div className="flex flex-col gap-4">
+            <Input
+              label="Title"
+              placeholder="Enter article title"
+              value={formData.title}
+              onChange={(e) => handleInputChange("title", e.target.value)}
+              isRequired
+            />
+            
+            <Textarea
+              label="Detail"
+              placeholder="Enter article detail/summary"
+              value={formData.detail}
+              onChange={(e) => handleInputChange("detail", e.target.value)}
+              isRequired
+            />
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Banner Image
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              />
+              {formData.image && !imageFile && (
+                <div className="mt-2">
+                  <img
+                    src={formData.image}
+                    alt="Current banner"
+                    className="w-32 h-20 object-cover rounded"
+                  />
+                </div>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Content
+              </label>
+              <RichTextEditor
+                value={formData.content}
+                onChange={(content) => handleInputChange("content", content)}
+              />
+            </div>
+          </div>
+        </ModalBody>
+        <ModalFooter>
+          <Button color="danger" variant="light" onPress={onClose}>
+            Cancel
+          </Button>
+          <Button
+            color="primary"
+            onPress={handleSubmit}
+            isLoading={isLoading}
+            isDisabled={!formData.title || !formData.detail || !formData.content}
+          >
+            {article ? "Update" : "Create"}
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
+};
