@@ -41,53 +41,64 @@ export const Articles: React.FC<ArticlesProps> = ({ data, meta }) => {
   };
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex justify-between gap-3 items-end">
-        <SearchInput
-          name="Articles"
-          callback={(value) => updateSearchParams({ query: value, page: "1" })}
-        />
-        <div className="flex gap-3">
-          <button
-            onClick={handleAdd}
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FF3E55] to-[#DB6E00] text-white px-4 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            Add Article
-          </button>
+    <div className="flex flex-col gap-6">
+      <div className="flex justify-between gap-4 items-center">
+        <div className="flex-1 max-w-md">
+          <SearchInput
+            name="Articles"
+            callback={(value) => updateSearchParams({ query: value, page: "1" })}
+          />
         </div>
+        <button
+          onClick={handleAdd}
+          className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FF3E55] to-[#DB6E00] text-white px-6 py-3 rounded-xl font-semibold hover:opacity-90 transition-all duration-200 shadow-lg hover:shadow-xl"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+          Add Article
+        </button>
       </div>
       
-      <Table aria-label="Articles table">
-        <TableHeader columns={columns}>
-          {(column) => (
-            <TableColumn
-              key={column.uid}
-              hideHeader={column.uid === "actions"}
-              align={column.uid === "actions" ? "center" : "start"}
-            >
-              {column.name}
-            </TableColumn>
-          )}
-        </TableHeader>
-        <TableBody items={data} emptyContent="No articles found">
-          {(item) => (
-            <TableRow key={item.id}>
-              {(columnKey) => (
-                <TableCell>
-                  <RenderCell
-                    article={item}
-                    columnKey={columnKey}
-                    onEdit={handleEdit}
-                  />
-                </TableCell>
-              )}
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <Table aria-label="Articles table" removeWrapper>
+          <TableHeader columns={columns}>
+            {(column) => (
+              <TableColumn
+                key={column.uid}
+                hideHeader={column.uid === "actions"}
+                align={column.uid === "actions" ? "center" : "start"}
+                className="bg-gray-50 text-gray-700 font-semibold"
+              >
+                {column.name}
+              </TableColumn>
+            )}
+          </TableHeader>
+          <TableBody items={data} emptyContent={
+            <div className="flex flex-col items-center justify-center py-12">
+              <svg className="w-12 h-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <p className="text-gray-500 text-lg font-medium">No articles found</p>
+              <p className="text-gray-400 text-sm">Get started by creating your first article</p>
+            </div>
+          }>
+            {(item) => (
+              <TableRow key={item.id} className="hover:bg-gray-50 transition-colors">
+                {(columnKey) => (
+                  <TableCell className="py-4">
+                    <RenderCell
+                      article={item}
+                      columnKey={columnKey}
+                      onEdit={handleEdit}
+                    />
+                  </TableCell>
+                )}
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
 
       {isModalOpen && (
         <ArticleModal

@@ -31,15 +31,15 @@ export const RenderCell: React.FC<RenderCellProps> = ({ article, columnKey, onEd
     case "title":
       return (
         <div className="flex flex-col">
-          <p className="text-bold text-small capitalize">{cellValue}</p>
+          <p className="font-semibold text-gray-900 text-sm">{cellValue}</p>
         </div>
       );
     case "detail":
       return (
         <div className="flex flex-col">
-          <p className="text-bold text-small capitalize line-clamp-2">
-            {typeof cellValue === "string" && cellValue.length > 100
-              ? `${cellValue.substring(0, 100)}...`
+          <p className="text-gray-600 text-sm line-clamp-2 leading-relaxed">
+            {typeof cellValue === "string" && cellValue.length > 80
+              ? `${cellValue.substring(0, 80)}...`
               : cellValue}
           </p>
         </div>
@@ -47,16 +47,16 @@ export const RenderCell: React.FC<RenderCellProps> = ({ article, columnKey, onEd
     case "createdAt":
       return (
         <div className="flex flex-col">
-          <p className="text-bold text-small capitalize">
+          <p className="text-gray-500 text-sm font-medium">
             {new Date(cellValue as string).toLocaleDateString()}
           </p>
         </div>
       );
     case "actions":
       return (
-        <div className="relative flex items-center gap-2">
+        <div className="relative flex items-center gap-1">
           <button
-            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 hover:scale-105"
             onClick={() => onEdit(article)}
             title="Edit Article"
           >
@@ -65,7 +65,7 @@ export const RenderCell: React.FC<RenderCellProps> = ({ article, columnKey, onEd
             </svg>
           </button>
           <button
-            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 hover:scale-105"
             onClick={handleDelete}
             title="Delete Article"
           >

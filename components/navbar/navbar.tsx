@@ -41,7 +41,7 @@ export const NavbarWrapper = ({ children }: Props) => {
           </NavbarContent>
         </div>
       </Navbar>
-      <div className="mt-14">
+      <div className="mt-20 px-5">
         {children}
       </div>
     </div>
