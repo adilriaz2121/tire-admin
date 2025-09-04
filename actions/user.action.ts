@@ -11,7 +11,7 @@ export async function signIn(data: LoginFormType): Promise<Result<{ token: strin
     // Set token in cookies
     const cookieStore = cookies();
     cookieStore.set("cookie-token", response.data.token, {
-      httpOnly: true,
+      httpOnly: false,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       maxAge: 15 * 24 * 60 * 60, // 15 days
@@ -37,14 +37,11 @@ export async function signOut(): Promise<Result<{ message: string }>> {
   }
 }
 
-export async function uploadImage(file: File): Promise<Result<{ url: string }>> {
+export async function uploadImage(fileData: { name: string; type: string; size: number; data: string }): Promise<Result<{ url: string }>> {
   try {
-    const formData = new FormData();
-    formData.append("file", file);
-
-    const response = await axiosInstance.post("/api/admin/upload", formData, {
+    const response = await axiosInstance.post("/api/admin/upload", fileData, {
       headers: {
-        "Content-Type": "multipart/form-data",
+        "Content-Type": "application/json",
       },
     });
 

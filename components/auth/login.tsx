@@ -28,6 +28,10 @@ function Login({
       if (result.error) {
         toast.error(result.error);
       } else {
+        // Store token in localStorage for client-side access
+        if (result.data?.token) {
+          localStorage.setItem("admin-token", result.data.token);
+        }
         toast.success("Login successful");
         router.push("/dashboard");
       }

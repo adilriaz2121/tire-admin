@@ -50,8 +50,11 @@ export const Articles: React.FC<ArticlesProps> = ({ data, meta }) => {
         <div className="flex gap-3">
           <button
             onClick={handleAdd}
-            className="bg-primaryColor text-black px-4 py-2 rounded-lg font-medium hover:bg-primaryColor/90 transition-colors"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FF3E55] to-[#DB6E00] text-white px-4 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity"
           >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
             Add Article
           </button>
         </div>

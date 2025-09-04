@@ -14,7 +14,16 @@ const coupons = async ({
         query: searchParams.query,
     });
     if (error || !meta) return <Error error={error || "No Data found"} />;
-    return <Coupons data={data?.items || []} meta={meta} />;
+    
+    return (
+        <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-2">
+                <h1 className="text-3xl font-bold text-gray-900">Coupons</h1>
+                <p className="text-gray-600">Manage discount coupons and promotional codes</p>
+            </div>
+            <Coupons data={data?.items || []} meta={meta} />
+        </div>
+    );
 };
 
 export default coupons;

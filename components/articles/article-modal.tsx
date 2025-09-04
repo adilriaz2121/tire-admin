@@ -13,12 +13,13 @@ import {
 } from "@nextui-org/react";
 import { IArticle } from "@/helpers/types";
 import { createArticle, updateArticle } from "@/actions/article.action";
-import { uploadImage } from "@/actions/user.action";
+import axios from "axios";
 import { toast } from "sonner";
 import dynamic from "next/dynamic";
 
-const RichTextEditor = dynamic(() => import("./rich-text-editor"), {
+const RichTextEditor = dynamic(() => import("./rich-text-editor").then(mod => ({ default: mod.RichTextEditor })), {
   ssr: false,
+  loading: () => <div className="h-[300px] bg-gray-100 rounded animate-pulse" />
 });
 
 interface ArticleModalProps {
@@ -84,13 +85,30 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
 
       // Upload new image if provided
       if (imageFile) {
-        const uploadResult = await uploadImage(imageFile);
-        if (uploadResult.error) {
-          toast.error(uploadResult.error);
+        const formData = new FormData();
+        formData.append("file", imageFile);
+
+        try {
+          // Get token from localStorage for client-side request
+          const token = localStorage.getItem('admin-token');
+          console.log("Token found:", token ? "Yes" : "No");
+          console.log("Backend URL:", process.env.NEXT_PUBLIC_BACKEND_URL);
+
+          const uploadResponse = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/admin/upload`, formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              ...(token && { Authorization: `Bearer ${token}` }),
+            },
+          });
+          console.log("Upload response:", uploadResponse.data);
+          imageUrl = uploadResponse.data.data.url;
+        } catch (uploadError: any) {
+          console.error("Upload error:", uploadError);
+          console.error("Upload error response:", uploadError.response?.data);
+          toast.error(uploadError.response?.data?.error || uploadError.message || "Image upload failed");
           setIsLoading(false);
           return;
         }
-        imageUrl = uploadResult.data?.url || "";
       }
 
       const articleData = {
@@ -155,13 +173,16 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
                 onChange={handleImageChange}
                 className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
               />
-              {formData.image && !imageFile && (
+              {(formData.image || imageFile) && (
                 <div className="mt-2">
                   <img
-                    src={formData.image}
+                    src={imageFile ? URL.createObjectURL(imageFile) : formData.image}
                     alt="Current banner"
-                    className="w-32 h-20 object-cover rounded"
+                    className="w-32 h-20 object-cover rounded border"
                   />
+                  <p className="text-xs text-gray-500 mt-1">
+                    {imageFile ? "New image selected" : "Current image"}
+                  </p>
                 </div>
               )}
             </div>

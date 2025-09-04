@@ -15,6 +15,8 @@ export const UserDropdown = () => {
   const { user, logout } = useAuth();
 
   const handleLogout = useCallback(async () => {
+    // Clear localStorage
+    localStorage.removeItem('admin-token');
     await logout();
   }, [logout]);
 
