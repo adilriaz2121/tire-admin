@@ -17,14 +17,14 @@ export const NavbarWrapper = ({ children }: Props) => {
     <div className="relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
       <Navbar
         isBordered
-        className="w-full bg-gradient-to-r from-[#FF3E55] to-[#DB6E00] fixed top-0 px-1 z-[25] md:px-5"
+        className="w-full  fixed top-0 px-1 z-[25] md:px-5"
         classNames={{
           wrapper: "w-full max-w-full",
         }}
       >
         <Link href={"/dashboard"}>
           <Image
-            src={"/logo_white.png"}
+            src={"/logo copy.png"}
             alt='Bay DJ'
             height={40}
             width={80}
