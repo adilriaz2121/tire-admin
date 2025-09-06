@@ -12,7 +12,6 @@ interface Props {
 
 export const Layout = ({ children }: Props) => {
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
-  const [isUploaded, setUploaded] = React.useState(false)
   // console.log("🚀 ~ Layout ~ isUploaded:", isUploaded)
   const [_, setLocked] = useLockedBody(false);
   const handleToggleSidebar = () => {
@@ -27,7 +26,7 @@ export const Layout = ({ children }: Props) => {
         setCollapsed: handleToggleSidebar,
       }}>
       <section className='flex'>
-        <SidebarWrapper isUploaded={isUploaded} />
+        <SidebarWrapper />
         <NavbarWrapper
         >{children}</NavbarWrapper>
       </section>

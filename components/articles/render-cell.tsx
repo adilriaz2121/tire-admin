@@ -12,7 +12,7 @@ interface RenderCellProps {
   onEdit: (article: IArticle) => void;
 }
 
-export const RenderCell: React.FC<RenderCellProps> = ({ article, columnKey, onEdit }) => {
+export const RenderCell = ({ article, columnKey, onEdit }:any) => {
   const cellValue = article[columnKey as keyof IArticle];
 
   const handleDelete = async () => {

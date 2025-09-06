@@ -29,7 +29,7 @@ interface TableWrapperProps<T> {
   data: T[];
   columns: IColumn[];
   RenderCell: RenderCellFunction<T>;
-  meta: IMeta;
+  meta: any;
 }
 
 export const TableWrapper = <T extends DataItem>({

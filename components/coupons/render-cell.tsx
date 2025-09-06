@@ -12,7 +12,7 @@ interface RenderCellProps {
   onEdit: (coupon: ICoupon) => void;
 }
 
-export const RenderCell: React.FC<RenderCellProps> = ({ coupon, columnKey, onEdit }) => {
+export const RenderCell = ({ coupon, columnKey, onEdit }:any) => {
   const cellValue = coupon[columnKey as keyof ICoupon];
 
   const handleDelete = async () => {
@@ -64,7 +64,7 @@ export const RenderCell: React.FC<RenderCellProps> = ({ coupon, columnKey, onEdi
       );
     case "isActive":
       return (
-        <div className="flex flex-col">
+        <div className="flex flex-col w-20 items-center justify-center">
           <span
             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium cursor-pointer ${
               coupon.isActive
