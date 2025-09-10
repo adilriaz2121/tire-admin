@@ -11,12 +11,14 @@ interface RenderCellProps {
   product: IProduct;
   columnKey: string;
   onEdit: (product: IProduct) => void;
+  onView: (product: IProduct) => void;
 }
 
 export const RenderCell: React.FC<RenderCellProps> = ({
   product,
   columnKey,
   onEdit,
+  onView,
 }) => {
   const handleDelete = async () => {
     if (window.confirm("Are you sure you want to delete this product?")) {
@@ -117,6 +119,15 @@ export const RenderCell: React.FC<RenderCellProps> = ({
     case "actions":
       return (
         <div className="relative flex items-center gap-2">
+          <Button
+            isIconOnly
+            size="sm"
+            variant="light"
+            onPress={() => onView(product)}
+            className="text-green-600 hover:text-green-800"
+          >
+            <EyeIcon className="w-4 h-4" />
+          </Button>
           <Button
             isIconOnly
             size="sm"

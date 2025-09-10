@@ -15,6 +15,7 @@ import {
 import { IProduct, IMeta } from "@/helpers/types";
 import { RenderCell } from "./render-cell";
 import { ProductModal } from "./product-modal";
+import { ViewProductModal } from "./view-product-modal";
 import { BulkUploadModal } from "./bulk-upload-modal";
 import SearchInput from "../search-input";
 import useUpdateSearchParams from "@/components/hooks/useTableSearchParams";
@@ -27,6 +28,7 @@ interface ProductsProps {
 export const Products: React.FC<ProductsProps> = ({ data, meta }) => {
   const [selectedProduct, setSelectedProduct] = useState<IProduct | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isBulkUploadOpen, setIsBulkUploadOpen] = useState(false);
   const { searchParams, updateSearchParams } = useUpdateSearchParams();
 
@@ -46,6 +48,11 @@ export const Products: React.FC<ProductsProps> = ({ data, meta }) => {
     setIsModalOpen(true);
   };
 
+  const handleView = (product: IProduct) => {
+    setSelectedProduct(product);
+    setIsViewModalOpen(true);
+  };
+
   const handleAdd = () => {
     setSelectedProduct(null);
     setIsModalOpen(true);
@@ -53,6 +60,11 @@ export const Products: React.FC<ProductsProps> = ({ data, meta }) => {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+    setSelectedProduct(null);
+  };
+
+  const handleCloseViewModal = () => {
+    setIsViewModalOpen(false);
     setSelectedProduct(null);
   };
 
@@ -171,6 +183,7 @@ export const Products: React.FC<ProductsProps> = ({ data, meta }) => {
                       product={item}
                       columnKey={columnKey}
                       onEdit={handleEdit}
+                      onView={handleView}
                     />
                   </TableCell>
                 )}
@@ -225,6 +238,14 @@ export const Products: React.FC<ProductsProps> = ({ data, meta }) => {
           product={selectedProduct}
           isOpen={isModalOpen}
           onClose={handleCloseModal}
+        />
+      )}
+
+      {isViewModalOpen && (
+        <ViewProductModal
+          productId={selectedProduct?.id || null}
+          isOpen={isViewModalOpen}
+          onClose={handleCloseViewModal}
         />
       )}
 
