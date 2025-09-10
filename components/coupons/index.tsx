@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
   Table,
   TableHeader,
@@ -53,16 +53,19 @@ export const Coupons: React.FC<CouponsProps> = ({ data, meta }) => {
     setSelectedCoupon(null);
   };
 
+  // Memoize the search callback to prevent infinite re-renders
+  const handleSearch = useCallback(
+    (value: string) => {
+      updateSearchParams({ query: value, page: "1" });
+    },
+    [updateSearchParams]
+  );
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between gap-4 items-center">
         <div className="flex-1 max-w-md">
-          <SearchInput
-            name="Coupons"
-            callback={(value) =>
-              updateSearchParams({ query: value, page: "1" })
-            }
-          />
+          <SearchInput name="Coupons" callback={handleSearch} />
         </div>
         <button
           onClick={handleAdd}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
   Table,
   TableHeader,
@@ -50,16 +50,19 @@ export const Articles: React.FC<ArticlesProps> = ({ data, meta }) => {
     setSelectedArticle(null);
   };
 
+  // Memoize the search callback to prevent infinite re-renders
+  const handleSearch = useCallback(
+    (value: string) => {
+      updateSearchParams({ query: value, page: "1" });
+    },
+    [updateSearchParams]
+  );
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between gap-4 items-center">
         <div className="flex-1 max-w-md">
-          <SearchInput
-            name="Articles"
-            callback={(value) =>
-              updateSearchParams({ query: value, page: "1" })
-            }
-          />
+          <SearchInput name="Articles" callback={handleSearch} />
         </div>
         <button
           onClick={handleAdd}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
   Table,
   TableHeader,
@@ -15,6 +15,7 @@ import {
 import { IProduct, IMeta } from "@/helpers/types";
 import { RenderCell } from "./render-cell";
 import { ProductModal } from "./product-modal";
+import { BulkUploadModal } from "./bulk-upload-modal";
 import SearchInput from "../search-input";
 import useUpdateSearchParams from "@/components/hooks/useTableSearchParams";
 
@@ -26,6 +27,7 @@ interface ProductsProps {
 export const Products: React.FC<ProductsProps> = ({ data, meta }) => {
   const [selectedProduct, setSelectedProduct] = useState<IProduct | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isBulkUploadOpen, setIsBulkUploadOpen] = useState(false);
   const { searchParams, updateSearchParams } = useUpdateSearchParams();
 
   const columns = [
@@ -54,36 +56,68 @@ export const Products: React.FC<ProductsProps> = ({ data, meta }) => {
     setSelectedProduct(null);
   };
 
+  const handleBulkUpload = () => {
+    setIsBulkUploadOpen(true);
+  };
+
+  const handleCloseBulkUpload = () => {
+    setIsBulkUploadOpen(false);
+  };
+
+  // Memoize the search callback to prevent infinite re-renders
+  const handleSearch = useCallback(
+    (value: string) => {
+      updateSearchParams({ query: value, page: "1" });
+    },
+    [updateSearchParams]
+  );
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between gap-4 items-center">
         <div className="flex-1 max-w-md">
-          <SearchInput
-            name="Products"
-            callback={(value) =>
-              updateSearchParams({ query: value, page: "1" })
-            }
-          />
+          <SearchInput name="Products" callback={handleSearch} />
         </div>
-        <button
-          onClick={handleAdd}
-          className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FF3E55] to-[#DB6E00] text-white px-6 py-3 rounded-xl font-semibold hover:opacity-90 transition-all duration-200 shadow-lg hover:shadow-xl"
-        >
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+        <div className="flex gap-3">
+          <button
+            onClick={handleBulkUpload}
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#10B981] to-[#059669] text-white px-6 py-3 rounded-xl font-semibold hover:opacity-90 transition-all duration-200 shadow-lg hover:shadow-xl"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 4v16m8-8H4"
-            />
-          </svg>
-          Add Product
-        </button>
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+              />
+            </svg>
+            Bulk Upload
+          </button>
+          <button
+            onClick={handleAdd}
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FF3E55] to-[#DB6E00] text-white px-6 py-3 rounded-xl font-semibold hover:opacity-90 transition-all duration-200 shadow-lg hover:shadow-xl"
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+            Add Product
+          </button>
+        </div>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -191,6 +225,13 @@ export const Products: React.FC<ProductsProps> = ({ data, meta }) => {
           product={selectedProduct}
           isOpen={isModalOpen}
           onClose={handleCloseModal}
+        />
+      )}
+
+      {isBulkUploadOpen && (
+        <BulkUploadModal
+          isOpen={isBulkUploadOpen}
+          onClose={handleCloseBulkUpload}
         />
       )}
     </div>

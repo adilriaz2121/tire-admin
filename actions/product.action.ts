@@ -88,3 +88,4 @@ export async function toggleProductActive(id: string, currentStatus: boolean): P
         return { error: errorMessage };
     }
 }
+
