@@ -39,6 +39,35 @@ export interface ICoupon {
   updatedAt: string;
 }
 
+export interface IProduct {
+  id: string;
+  make: string;
+  model: string;
+  year: string;
+  trim: string;
+  size: string;
+  mfg: string;
+  item: string;
+  detail: string;
+  description: string;
+  quantity: number;
+  price: number;
+  images: string[];
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  reviews?: IReview[];
+}
+
+export interface IReview {
+  id: string;
+  name: string;
+  country: string;
+  review: string;
+  rating: number;
+  createdAt: string;
+}
+
 export interface IColumn {
   name: string;
   uid: string;

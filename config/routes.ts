@@ -3,6 +3,7 @@ import {
   LayoutDashboard,
   FileText,
   Tag,
+  Package,
 } from "lucide-react";
 
 export const routes = [
@@ -22,6 +23,12 @@ export const routes = [
     title: "Coupons",
     icon: Tag,
     href: "/dashboard/coupons",
+    admin: true,
+  },
+  {
+    title: "Products",
+    icon: Package,
+    href: "/dashboard/products",
     admin: true,
   },
 ];
