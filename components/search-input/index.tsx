@@ -1,6 +1,6 @@
 import { Input } from "@nextui-org/react";
 import { useSearchParams, useRouter } from "next/navigation";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 interface SearchInputProps {
   name?: string; // Optional placeholder text
@@ -21,7 +21,17 @@ const SearchInput: React.FC<SearchInputProps> = ({
   useEffect(() => {
     const queryValue = searchParams.get("search"); // Get 'search' param from URL
     setInputValue(queryValue || ""); // Initialize input value
-  }, [searchParams]);
+  }, []); // Only run once on mount
+
+  // Memoize callback to prevent unnecessary re-renders
+  const memoizedCallback = useCallback(
+    (value: string) => {
+      if (callback) {
+        callback(value);
+      }
+    },
+    [callback]
+  );
 
   // Handle input changes with debouncing, URL updates, and callback execution
   useEffect(() => {
@@ -35,17 +45,14 @@ const SearchInput: React.FC<SearchInputProps> = ({
       }
 
       router.push(`?${params.toString()}`); // Update URL
-      router.refresh(); // Refresh the page (if necessary for your app)
 
-      if (callback) {
-        callback(inputValue); // Execute the callback function
-      }
+      memoizedCallback(inputValue); // Execute the callback function
     }, debounceTime);
 
     return () => {
       clearTimeout(handler); // Clear timeout if the input changes again
     };
-  }, [inputValue, debounceTime, searchParams, router, callback]);
+  }, [inputValue, debounceTime, router, memoizedCallback]);
 
   // Handle input changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

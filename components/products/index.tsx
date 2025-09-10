@@ -56,15 +56,18 @@ export const Products: React.FC<ProductsProps> = ({ data, meta }) => {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-        <SearchInput
-          name="Products"
-          callback={(value) => updateSearchParams({ query: value, page: "1" })}
-        />
-
+      <div className="flex justify-between gap-4 items-center">
+        <div className="flex-1 max-w-md">
+          <SearchInput
+            name="Products"
+            callback={(value) =>
+              updateSearchParams({ query: value, page: "1" })
+            }
+          />
+        </div>
         <button
           onClick={handleAdd}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center gap-2"
+          className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FF3E55] to-[#DB6E00] text-white px-6 py-3 rounded-xl font-semibold hover:opacity-90 transition-all duration-200 shadow-lg hover:shadow-xl"
         >
           <svg
             className="w-5 h-5"
