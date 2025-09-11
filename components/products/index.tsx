@@ -181,7 +181,7 @@ export const Products: React.FC<ProductsProps> = ({ data, meta }) => {
                   <TableCell className="py-4">
                     <RenderCell
                       product={item}
-                      columnKey={columnKey}
+                      columnKey={String(columnKey)}
                       onEdit={handleEdit}
                       onView={handleView}
                     />
