@@ -70,7 +70,7 @@ export const BulkUploadModal: React.FC<BulkUploadModalProps> = ({
     if (file) {
       const event = {
         target: { files: [file] },
-      } as React.ChangeEvent<HTMLInputElement>;
+      } as unknown as React.ChangeEvent<HTMLInputElement>;
       handleFileSelect(event);
     }
   };
@@ -177,7 +177,6 @@ Bridgestone,Potenza RE-71R,2023,Summer,245/40R18,Bridgestone,67890,Track focused
         </ModalHeader>
         <ModalBody>
           <div className="space-y-6">
-            {/* File Format Instructions */}
             <div className="bg-blue-50 p-4 rounded-lg">
               <h3 className="font-semibold text-blue-900 mb-2">
                 File Format Requirements:
@@ -187,9 +186,8 @@ Bridgestone,Potenza RE-71R,2023,Summer,245/40R18,Bridgestone,67890,Track focused
                 <li>• Maximum file size: 5MB</li>
                 <li>
                   • Required columns: Make, Model, Year, Trim, Size, Mfg, Item,
-                  Description, Qty, desc, Price
+                  Description, Qty, desc, Price ,pictures
                 </li>
-                <li>• Optional column: pictures (comma-separated URLs)</li>
               </ul>
             </div>
 
