@@ -4,6 +4,7 @@ import {
   FileText,
   Tag,
   Package,
+  MessageSquare,
 } from "lucide-react";
 
 export const routes = [
@@ -29,6 +30,12 @@ export const routes = [
     title: "Products",
     icon: Package,
     href: "/dashboard/products",
+    admin: true,
+  },
+  {
+    title: "Reviews",
+    icon: MessageSquare,
+    href: "/dashboard/reviews",
     admin: true,
   },
 ];

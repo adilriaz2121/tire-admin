@@ -65,7 +65,9 @@ export interface IReview {
   country: string;
   review: string;
   rating: number;
+  productsId: string;
   createdAt: string;
+  updatedAt?: string;
 }
 
 export interface IColumn {
