@@ -141,16 +141,12 @@ export const ContactsPage: React.FC<ContactsProps> = ({
 
   return (
     <div className="w-full flex flex-col gap-4">
-      <div className="flex justify-between gap-3 items-end">
-        <div className="flex gap-3 items-center">
-          <SearchInput
-            placeholder="Search contacts..."
-            onSearch={handleSearch}
-            defaultValue={searchParams.get("search") || ""}
-          />
+      <div className="flex flex-col gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <SearchInput name="contacts" callback={handleSearch} />
           <Select
             placeholder="Filter by status"
-            className="max-w-xs"
+            className="w-full"
             selectedKeys={
               searchParams.get("isRead") ? [searchParams.get("isRead")!] : []
             }

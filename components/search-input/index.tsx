@@ -62,8 +62,10 @@ const SearchInput: React.FC<SearchInputProps> = ({
   return (
     <Input
       classNames={{
+        base: "w-full",
         input: "w-full",
         mainWrapper: "w-full",
+        inputWrapper: "w-full",
       }}
       name={name}
       placeholder={`Search ${name}`}

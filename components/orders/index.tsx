@@ -127,7 +127,7 @@ export const OrdersPage: React.FC<OrdersProps> = ({
   };
 
   const statusCounts = {
-    total: orders.length,
+    total: meta.total,
     pending: orders.filter((order) => order.status === "pending").length,
     shipped: orders.filter((order) => order.status === "shipped").length,
     delivered: orders.filter((order) => order.status === "delivered").length,
@@ -137,57 +137,52 @@ export const OrdersPage: React.FC<OrdersProps> = ({
   return (
     <div className="w-full flex flex-col gap-4">
       {/* Filters */}
-      <div className="flex flex-col gap-3">
-        <div className="flex justify-between gap-3 items-end flex-wrap">
-          <div className="flex gap-3 items-center flex-wrap">
-            <SearchInput
-              placeholder="Search orders..."
-              onSearch={handleSearch}
-              defaultValue={searchParams.get("search") || ""}
-            />
-            <Select
-              placeholder="Filter by status"
-              className="max-w-xs"
-              selectedKeys={
-                searchParams.get("status") ? [searchParams.get("status")!] : []
-              }
-              onSelectionChange={(keys) => {
-                const status = Array.from(keys)[0] as string;
-                handleStatusFilter(status || "");
-              }}
-            >
-              <SelectItem key="" value="">
-                All Status
-              </SelectItem>
-              <SelectItem key="pending" value="pending">
-                Pending
-              </SelectItem>
-              <SelectItem key="shipped" value="shipped">
-                Shipped
-              </SelectItem>
-              <SelectItem key="delivered" value="delivered">
-                Delivered
-              </SelectItem>
-              <SelectItem key="cancelled" value="cancelled">
-                Cancelled
-              </SelectItem>
-            </Select>
-          </div>
+      <div className="flex flex-col gap-4">
+        {/* Search and Status Filter */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <SearchInput name="orders" callback={handleSearch} />
+          <Select
+            placeholder="Filter by status"
+            className="w-full"
+            selectedKeys={
+              searchParams.get("status") ? [searchParams.get("status")!] : []
+            }
+            onSelectionChange={(keys) => {
+              const status = Array.from(keys)[0] as string;
+              handleStatusFilter(status || "");
+            }}
+          >
+            <SelectItem key="" value="">
+              All Status
+            </SelectItem>
+            <SelectItem key="pending" value="pending">
+              Pending
+            </SelectItem>
+            <SelectItem key="shipped" value="shipped">
+              Shipped
+            </SelectItem>
+            <SelectItem key="delivered" value="delivered">
+              Delivered
+            </SelectItem>
+            <SelectItem key="cancelled" value="cancelled">
+              Cancelled
+            </SelectItem>
+          </Select>
         </div>
 
         {/* Amount filters */}
-        <div className="flex gap-3 items-center flex-wrap">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <Input
             type="number"
             placeholder="Min Amount"
-            className="max-w-xs"
+            className="w-full"
             value={searchParams.get("minAmount") || ""}
             onChange={(e) => handleAmountFilter("min", e.target.value)}
           />
           <Input
             type="number"
             placeholder="Max Amount"
-            className="max-w-xs"
+            className="w-full"
             value={searchParams.get("maxAmount") || ""}
             onChange={(e) => handleAmountFilter("max", e.target.value)}
           />

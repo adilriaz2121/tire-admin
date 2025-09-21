@@ -166,7 +166,7 @@ export const RenderCell: React.FC<RenderCellProps> = ({
               variant="light"
               onPress={() => onView(order)}
             >
-              <EyeIcon />
+              <EyeIcon fill="currentColor" />
             </Button>
           </Tooltip>
         </div>
