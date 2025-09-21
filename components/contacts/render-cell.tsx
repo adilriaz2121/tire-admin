@@ -23,8 +23,7 @@ export const RenderCell: React.FC<RenderCellProps> = ({
   onView,
   onRefresh,
 }) => {
-  const handleMarkAsRead = async (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleMarkAsRead = async () => {
     try {
       await markContactAsRead(contact.id);
       onRefresh();
@@ -33,8 +32,7 @@ export const RenderCell: React.FC<RenderCellProps> = ({
     }
   };
 
-  const handleDelete = async (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleDelete = async () => {
     if (window.confirm("Are you sure you want to delete this contact?")) {
       try {
         await deleteContact(contact.id);

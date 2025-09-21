@@ -86,11 +86,12 @@ const ChartsSection: React.FC<ChartsSectionProps> = ({ charts }) => {
         <CardBody className="pt-6">
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={productsMonthlyData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip />
+              <CartesianGrid key="grid-1" strokeDasharray="3 3" />
+              <XAxis key="xaxis-1" dataKey="month" />
+              <YAxis key="yaxis-1" />
+              <Tooltip key="tooltip-1" />
               <Line
+                key="line-1"
                 type="monotone"
                 dataKey="products"
                 stroke="#8884d8"
@@ -118,11 +119,11 @@ const ChartsSection: React.FC<ChartsSectionProps> = ({ charts }) => {
         <CardBody className="pt-6">
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={ordersMonthlyData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="orders" fill="#82ca9d" />
+              <CartesianGrid key="grid-2" strokeDasharray="3 3" />
+              <XAxis key="xaxis-2" dataKey="month" />
+              <YAxis key="yaxis-2" />
+              <Tooltip key="tooltip-2" />
+              <Bar key="bar-1" dataKey="orders" fill="#82ca9d" />
             </BarChart>
           </ResponsiveContainer>
         </CardBody>
@@ -137,16 +138,18 @@ const ChartsSection: React.FC<ChartsSectionProps> = ({ charts }) => {
         <CardBody className="pt-6">
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={ordersMonthlyData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
+              <CartesianGrid key="grid-3" strokeDasharray="3 3" />
+              <XAxis key="xaxis-3" dataKey="month" />
+              <YAxis key="yaxis-3" />
               <Tooltip
+                key="tooltip-3"
                 formatter={(value) => [
                   `$${Number(value).toFixed(2)}`,
                   "Revenue",
                 ]}
               />
               <Line
+                key="line-2"
                 type="monotone"
                 dataKey="revenue"
                 stroke="#10b981"
@@ -168,6 +171,7 @@ const ChartsSection: React.FC<ChartsSectionProps> = ({ charts }) => {
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
+                key="pie-1"
                 data={statusPieData}
                 cx="50%"
                 cy="50%"
@@ -183,8 +187,8 @@ const ChartsSection: React.FC<ChartsSectionProps> = ({ charts }) => {
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
               </Pie>
-              <Tooltip />
-              <Legend />
+              <Tooltip key="tooltip-4" />
+              <Legend key="legend-1" />
             </PieChart>
           </ResponsiveContainer>
         </CardBody>
