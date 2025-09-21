@@ -292,7 +292,11 @@ export const OrderModal: React.FC<OrderModalProps> = ({
                     placeholder="Select status"
                     selectedKeys={[selectedStatus]}
                     onSelectionChange={(keys) => {
-                      const status = Array.from(keys)[0] as string;
+                      const status = Array.from(keys)[0] as
+                        | "pending"
+                        | "shipped"
+                        | "delivered"
+                        | "cancelled";
                       setSelectedStatus(status);
                     }}
                   >
