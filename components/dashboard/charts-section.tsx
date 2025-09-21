@@ -57,7 +57,7 @@ const ChartsSection: React.FC<ChartsSectionProps> = ({ charts }) => {
   // Status breakdown pie chart data
   const statusColors = {
     pending: "#f59e0b",
-    shipped: "#3b82f6",
+    shipped: "#FF7101",
     delivered: "#10b981",
     cancelled: "#ef4444",
   };
@@ -94,7 +94,7 @@ const ChartsSection: React.FC<ChartsSectionProps> = ({ charts }) => {
                 key="line-1"
                 type="monotone"
                 dataKey="products"
-                stroke="#8884d8"
+                stroke="#FF7101"
                 strokeWidth={2}
                 dot={{ r: 4 }}
               />
@@ -123,7 +123,7 @@ const ChartsSection: React.FC<ChartsSectionProps> = ({ charts }) => {
               <XAxis key="xaxis-2" dataKey="month" />
               <YAxis key="yaxis-2" />
               <Tooltip key="tooltip-2" />
-              <Bar key="bar-1" dataKey="orders" fill="#82ca9d" />
+              <Bar key="bar-1" dataKey="orders" fill="#FF7101" />
             </BarChart>
           </ResponsiveContainer>
         </CardBody>
@@ -152,7 +152,7 @@ const ChartsSection: React.FC<ChartsSectionProps> = ({ charts }) => {
                 key="line-2"
                 type="monotone"
                 dataKey="revenue"
-                stroke="#10b981"
+                stroke="#FF7101"
                 strokeWidth={2}
                 dot={{ r: 4 }}
               />
@@ -180,7 +180,7 @@ const ChartsSection: React.FC<ChartsSectionProps> = ({ charts }) => {
                   `${name} ${(percent * 100).toFixed(0)}%`
                 }
                 outerRadius={80}
-                fill="#8884d8"
+                fill="#FF7101"
                 dataKey="value"
               >
                 {statusPieData.map((entry, index) => (

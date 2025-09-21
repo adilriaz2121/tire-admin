@@ -22,11 +22,11 @@ export const NavbarWrapper = ({ children }: Props) => {
       >
         <Link href={"/dashboard"}>
           <Image
-            src={"/logo copy.png"}
+            src={"/logo.png"}
             alt="Bay DJ"
             height={40}
-            width={80}
-            className="h-auto w-32"
+            width={40}
+            className="h-auto w-16"
           />
         </Link>
 
