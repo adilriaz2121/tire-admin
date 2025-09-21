@@ -117,22 +117,19 @@ export const ContactsPage: React.FC<ContactsProps> = ({
   };
 
   const handlePageChange = (page: number) => {
-    updateSearchParams("page", page.toString());
+    updateSearchParams({ page: page.toString() });
   };
 
   const handleLimitChange = (limit: string) => {
-    updateSearchParams("limit", limit);
-    updateSearchParams("page", "1");
+    updateSearchParams({ limit, page: "1" });
   };
 
   const handleSearch = (search: string) => {
-    updateSearchParams("search", search);
-    updateSearchParams("page", "1");
+    updateSearchParams({ search: search || undefined, page: "1" });
   };
 
   const handleStatusFilter = (status: string) => {
-    updateSearchParams("isRead", status);
-    updateSearchParams("page", "1");
+    updateSearchParams({ isRead: status || undefined, page: "1" });
   };
 
   const unreadCount = contacts.filter(
@@ -222,7 +219,13 @@ export const ContactsPage: React.FC<ContactsProps> = ({
         aria-label="Contacts table"
         selectionMode="multiple"
         selectedKeys={selectedKeys}
-        onSelectionChange={(keys) => setSelectedKeys(new Set(keys as string[]))}
+        onSelectionChange={(keys) => {
+          if (keys === "all") {
+            setSelectedKeys(new Set(contacts.map(contact => contact.id)));
+          } else {
+            setSelectedKeys(new Set(Array.from(keys as Set<string>)));
+          }
+        }}
       >
         <TableHeader columns={columns}>
           {(column) => (

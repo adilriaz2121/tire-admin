@@ -103,27 +103,24 @@ export const OrdersPage: React.FC<OrdersProps> = ({
   };
 
   const handlePageChange = (page: number) => {
-    updateSearchParams("page", page.toString());
+    updateSearchParams({ page: page.toString() });
   };
 
   const handleLimitChange = (limit: string) => {
-    updateSearchParams("limit", limit);
-    updateSearchParams("page", "1");
+    updateSearchParams({ limit, page: "1" });
   };
 
   const handleSearch = (search: string) => {
-    updateSearchParams("search", search);
-    updateSearchParams("page", "1");
+    updateSearchParams({ search: search || undefined, page: "1" });
   };
 
   const handleStatusFilter = (status: string) => {
-    updateSearchParams("status", status);
-    updateSearchParams("page", "1");
+    updateSearchParams({ status: status || undefined, page: "1" });
   };
 
   const handleAmountFilter = (type: "min" | "max", value: string) => {
-    updateSearchParams(type === "min" ? "minAmount" : "maxAmount", value);
-    updateSearchParams("page", "1");
+    const key = type === "min" ? "minAmount" : "maxAmount";
+    updateSearchParams({ [key]: value || undefined, page: "1" });
   };
 
   const statusCounts = {
