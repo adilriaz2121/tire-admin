@@ -69,7 +69,7 @@ const ChartsSection: React.FC<ChartsSectionProps> = ({ charts }) => {
   }));
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 gap-6">
       {/* Products Chart */}
       <Card>
         <CardHeader className="pb-2">
@@ -180,44 +180,6 @@ const ChartsSection: React.FC<ChartsSectionProps> = ({ charts }) => {
       </Card>
 
       {/* Order Status Breakdown */}
-      <Card>
-        <CardHeader className="pb-2">
-          <h3 className="text-lg font-semibold">Order Status Breakdown</h3>
-        </CardHeader>
-        <Divider />
-        <CardBody className="pt-6">
-          {/* @ts-ignore */}
-          <ResponsiveContainer width="100%" height={300}>
-            {/* @ts-ignore */}
-            <PieChart width={500} height={300}>
-              {/* @ts-ignore */}
-              <Pie
-                data={statusPieData}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                // @ts-ignore
-                label={({ name, percent }: { name: string; percent: number }) =>
-                  `${name} ${(percent * 100).toFixed(0)}%`
-                }
-                outerRadius={80}
-                fill="#FF7101"
-                dataKey="value"
-              >
-                {/* @ts-ignore */}
-                {statusPieData.map((entry, index) => (
-                  /* @ts-ignore */
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              {/* @ts-ignore */}
-              <Tooltip />
-              {/* @ts-ignore */}
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
-        </CardBody>
-      </Card>
     </div>
   );
 };
