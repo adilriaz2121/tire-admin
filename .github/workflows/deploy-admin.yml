@@ -72,6 +72,8 @@ jobs:
                     proxy_cache_bypass $http_upgrade;
                 }
             }
+
+
             ' | sudo tee /etc/nginx/sites-available/tire-admin
 
             sudo ln -sf /etc/nginx/sites-available/tire-admin /etc/nginx/sites-enabled/
