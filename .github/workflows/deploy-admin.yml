@@ -1,0 +1,76 @@
+name: Deploy Admin Panel
+
+on:
+  push:
+    branches:
+      - main # or 'master' depending on your repo
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build admin app
+        run: npm run build
+
+      - name: Deploy to Server via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ubuntu
+          key: ${{ secrets.SERVER_PRIVATE_KEY }}
+          script: |
+            cd /home/ubuntu
+
+            # Remove old build
+            sudo rm -rf /var/www/tire-admin
+            sudo mkdir -p /var/www/tire-admin
+            sudo chown -R ubuntu:ubuntu /var/www/tire-admin
+
+            # Clone or copy latest code
+            git clone https://github.com/yourusername/tire-admin.git /var/www/tire-admin
+
+            cd /var/www/tire-admin
+            npm install
+            npm run build
+
+            # Serve using PM2
+            sudo npm install -g pm2 serve
+            pm2 delete tire-admin || true
+            pm2 start "serve -s build -l 3001" --name tire-admin
+            pm2 save
+
+            # Configure NGINX
+            echo '
+            server {
+                listen 80;
+                server_name admin.cinefloat.site;
+
+                location / {
+                    proxy_pass http://localhost:3001;
+                    proxy_http_version 1.1;
+                    proxy_set_header Upgrade $http_upgrade;
+                    proxy_set_header Connection "upgrade";
+                    proxy_set_header Host $host;
+                    proxy_cache_bypass $http_upgrade;
+                }
+            }
+            ' | sudo tee /etc/nginx/sites-available/tire-admin
+
+            sudo ln -sf /etc/nginx/sites-available/tire-admin /etc/nginx/sites-enabled/
+            sudo nginx -t
+            sudo systemctl restart nginx
+
+            # Enable SSL if not already
+            sudo certbot --nginx -d admin.cinefloat.site --non-interactive --agree-tos -m admin@cinefloat.site || true
