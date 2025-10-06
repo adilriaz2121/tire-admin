@@ -206,7 +206,90 @@ export const OrderModal: React.FC<OrderModalProps> = ({
                     <Divider />
                     <div>
                       <h4 className="text-lg font-semibold mb-3">Products</h4>
-                      {order.productInfo ? (
+                      {order.productInfo && Array.isArray(order.productInfo) ? (
+                        <div className="space-y-3">
+                          {order.productInfo.map(
+                            (product: any, index: number) => (
+                              <div
+                                key={index}
+                                className="bg-gray-50 p-4 rounded-lg"
+                              >
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                  <div>
+                                    <label className="text-sm font-semibold text-gray-600">
+                                      Product ID
+                                    </label>
+                                    <p className="text-base font-mono">
+                                      {product.productId || product.id || "N/A"}
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <label className="text-sm font-semibold text-gray-600">
+                                      Quantity
+                                    </label>
+                                    <p className="text-base">
+                                      {product.quantity || 1}
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <label className="text-sm font-semibold text-gray-600">
+                                      Price
+                                    </label>
+                                    <p className="text-base font-semibold text-green-600">
+                                      $
+                                      {(
+                                        product.price ||
+                                        product.unitPrice ||
+                                        0
+                                      ).toFixed(2)}
+                                    </p>
+                                  </div>
+                                  {product.name && (
+                                    <div className="md:col-span-3">
+                                      <label className="text-sm font-semibold text-gray-600">
+                                        Product Name
+                                      </label>
+                                      <p className="text-base">
+                                        {product.name}
+                                      </p>
+                                    </div>
+                                  )}
+                                  {product.brand && (
+                                    <div>
+                                      <label className="text-sm font-semibold text-gray-600">
+                                        Brand
+                                      </label>
+                                      <p className="text-base">
+                                        {product.brand}
+                                      </p>
+                                    </div>
+                                  )}
+                                  {product.size && (
+                                    <div>
+                                      <label className="text-sm font-semibold text-gray-600">
+                                        Size
+                                      </label>
+                                      <p className="text-base">
+                                        {product.size}
+                                      </p>
+                                    </div>
+                                  )}
+                                  {product.category && (
+                                    <div>
+                                      <label className="text-sm font-semibold text-gray-600">
+                                        Category
+                                      </label>
+                                      <p className="text-base">
+                                        {product.category}
+                                      </p>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            )
+                          )}
+                        </div>
+                      ) : order.productInfo ? (
                         <div className="bg-gray-50 p-4 rounded-lg">
                           <pre className="text-sm whitespace-pre-wrap">
                             {JSON.stringify(order.productInfo, null, 2)}
@@ -231,7 +314,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
                 )}
 
                 {/* Additional Information */}
-                {(order.userInfo ||
+                {/* {(order.userInfo ||
                   order.shippingInfo ||
                   order.pricingInfo) && (
                   <>
@@ -280,7 +363,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
                       </div>
                     </div>
                   </>
-                )}
+                )} */}
 
                 <Divider />
 
@@ -292,7 +375,11 @@ export const OrderModal: React.FC<OrderModalProps> = ({
                     placeholder="Select status"
                     selectedKeys={[selectedStatus]}
                     onSelectionChange={(keys) => {
-                      const status = Array.from(keys)[0] as string;
+                      const status = Array.from(keys)[0] as
+                        | "pending"
+                        | "shipped"
+                        | "delivered"
+                        | "cancelled";
                       setSelectedStatus(status);
                     }}
                   >

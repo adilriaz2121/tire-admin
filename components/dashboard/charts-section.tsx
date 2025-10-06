@@ -57,7 +57,7 @@ const ChartsSection: React.FC<ChartsSectionProps> = ({ charts }) => {
   // Status breakdown pie chart data
   const statusColors = {
     pending: "#f59e0b",
-    shipped: "#3b82f6",
+    shipped: "#FF7101",
     delivered: "#10b981",
     cancelled: "#ef4444",
   };
@@ -69,7 +69,7 @@ const ChartsSection: React.FC<ChartsSectionProps> = ({ charts }) => {
   }));
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 gap-6">
       {/* Products Chart */}
       <Card>
         <CardHeader className="pb-2">
@@ -84,17 +84,23 @@ const ChartsSection: React.FC<ChartsSectionProps> = ({ charts }) => {
         </CardHeader>
         <Divider />
         <CardBody className="pt-6">
+          {/* @ts-ignore */}
           <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={productsMonthlyData}>
-              <CartesianGrid key="grid-1" strokeDasharray="3 3" />
-              <XAxis key="xaxis-1" dataKey="month" />
-              <YAxis key="yaxis-1" />
-              <Tooltip key="tooltip-1" />
+            {/* @ts-ignore */}
+            <LineChart data={productsMonthlyData} width={500} height={300}>
+              {/* @ts-ignore */}
+              <CartesianGrid strokeDasharray="3 3" />
+              {/* @ts-ignore */}
+              <XAxis dataKey="month" />
+              {/* @ts-ignore */}
+              <YAxis />
+              {/* @ts-ignore */}
+              <Tooltip />
+              {/* @ts-ignore */}
               <Line
-                key="line-1"
                 type="monotone"
                 dataKey="products"
-                stroke="#8884d8"
+                stroke="#FF7101"
                 strokeWidth={2}
                 dot={{ r: 4 }}
               />
@@ -117,13 +123,20 @@ const ChartsSection: React.FC<ChartsSectionProps> = ({ charts }) => {
         </CardHeader>
         <Divider />
         <CardBody className="pt-6">
+          {/* @ts-ignore */}
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={ordersMonthlyData}>
-              <CartesianGrid key="grid-2" strokeDasharray="3 3" />
-              <XAxis key="xaxis-2" dataKey="month" />
-              <YAxis key="yaxis-2" />
-              <Tooltip key="tooltip-2" />
-              <Bar key="bar-1" dataKey="orders" fill="#82ca9d" />
+            {/* @ts-ignore */}
+            <BarChart data={ordersMonthlyData} width={500} height={300}>
+              {/* @ts-ignore */}
+              <CartesianGrid strokeDasharray="3 3" />
+              {/* @ts-ignore */}
+              <XAxis dataKey="month" />
+              {/* @ts-ignore */}
+              <YAxis />
+              {/* @ts-ignore */}
+              <Tooltip />
+              {/* @ts-ignore */}
+              <Bar dataKey="orders" fill="#FF7101" />
             </BarChart>
           </ResponsiveContainer>
         </CardBody>
@@ -136,23 +149,28 @@ const ChartsSection: React.FC<ChartsSectionProps> = ({ charts }) => {
         </CardHeader>
         <Divider />
         <CardBody className="pt-6">
+          {/* @ts-ignore */}
           <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={ordersMonthlyData}>
-              <CartesianGrid key="grid-3" strokeDasharray="3 3" />
-              <XAxis key="xaxis-3" dataKey="month" />
-              <YAxis key="yaxis-3" />
+            {/* @ts-ignore */}
+            <LineChart data={ordersMonthlyData} width={500} height={300}>
+              {/* @ts-ignore */}
+              <CartesianGrid strokeDasharray="3 3" />
+              {/* @ts-ignore */}
+              <XAxis dataKey="month" />
+              {/* @ts-ignore */}
+              <YAxis />
+              {/* @ts-ignore */}
               <Tooltip
-                key="tooltip-3"
                 formatter={(value) => [
                   `$${Number(value).toFixed(2)}`,
                   "Revenue",
                 ]}
               />
+              {/* @ts-ignore */}
               <Line
-                key="line-2"
                 type="monotone"
                 dataKey="revenue"
-                stroke="#10b981"
+                stroke="#FF7101"
                 strokeWidth={2}
                 dot={{ r: 4 }}
               />
@@ -162,37 +180,6 @@ const ChartsSection: React.FC<ChartsSectionProps> = ({ charts }) => {
       </Card>
 
       {/* Order Status Breakdown */}
-      <Card>
-        <CardHeader className="pb-2">
-          <h3 className="text-lg font-semibold">Order Status Breakdown</h3>
-        </CardHeader>
-        <Divider />
-        <CardBody className="pt-6">
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                key="pie-1"
-                data={statusPieData}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={({ name, percent }) =>
-                  `${name} ${(percent * 100).toFixed(0)}%`
-                }
-                outerRadius={80}
-                fill="#8884d8"
-                dataKey="value"
-              >
-                {statusPieData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip key="tooltip-4" />
-              <Legend key="legend-1" />
-            </PieChart>
-          </ResponsiveContainer>
-        </CardBody>
-      </Card>
     </div>
   );
 };

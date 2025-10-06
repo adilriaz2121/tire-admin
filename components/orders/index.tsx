@@ -188,11 +188,11 @@ export const OrdersPage: React.FC<OrdersProps> = ({
 
       {/* Status Overview */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <div className="bg-blue-50 p-3 rounded-lg text-center">
-          <p className="text-2xl font-bold text-blue-600">
+        <div className="bg-orange-50 p-3 rounded-lg text-center">
+          <p className="text-2xl font-bold text-[#FF7101]">
             {statusCounts.total}
           </p>
-          <p className="text-sm text-blue-600">Total Orders</p>
+          <p className="text-sm text-[#FF7101]">Total Orders</p>
         </div>
         <div className="bg-yellow-50 p-3 rounded-lg text-center">
           <p className="text-2xl font-bold text-yellow-600">

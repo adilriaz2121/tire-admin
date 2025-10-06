@@ -38,12 +38,18 @@ export const CollapseItems = ({ icon, items, title }: Props) => {
         >
           <div className="pl-5">
             {items.map((item, index) => {
-              const isActive = currentPath.startsWith('/dashboard/products') && currentTable === item._id;
+              const isActive =
+                currentPath.startsWith("/dashboard/products") &&
+                currentTable === item._id;
               return (
                 <Link
                   key={index}
                   href={`/dashboard/products?currentTable=${item._id}`}
-                  className={`w-full flex text-default-500 my-0.5  p-2 items-end gap-2 rounded-xl transition-colors capitalize ${isActive ? "bg-[#FF3E55] text-white" : "hover:bg-slate-100 dark:hover:bg-slate-600 hover:text-default-900"}`}
+                  className={`w-full flex text-default-500 my-0.5  p-2 items-end gap-2 rounded-xl transition-colors capitalize ${
+                    isActive
+                      ? "bg-[#FF7101] text-white"
+                      : "hover:bg-slate-100 dark:hover:bg-slate-600 hover:text-default-900"
+                  }`}
                 >
                   <FileCheck2 className="h-5 w-5" />
                   {item.name}

@@ -101,15 +101,16 @@ export function Reviews({ data, meta }: ReviewsProps) {
     }
   };
 
-  const renderCell = (review: Review, columnKey: React.Key) => (
-    <RenderCell
-      review={review}
-      columnKey={columnKey}
-      onView={handleView}
-      onEdit={handleEdit}
-      onDelete={handleDelete}
-    />
-  );
+  const renderCell = (review: Review, columnKey: React.Key) => {
+    const result = RenderCell({
+      review,
+      columnKey,
+      onView: handleView,
+      onEdit: handleEdit,
+      onDelete: handleDelete,
+    });
+    return result ?? null;
+  };
 
   return (
     <div className="flex flex-col gap-4">

@@ -27,7 +27,11 @@ interface ViewReviewModalProps {
   review: Review | null;
 }
 
-export const ViewReviewModal = ({ isOpen, onClose, review }: ViewReviewModalProps) => {
+export const ViewReviewModal = ({
+  isOpen,
+  onClose,
+  review,
+}: ViewReviewModalProps) => {
   if (!review) return null;
 
   const getRatingColor = (rating: number) => {
@@ -37,12 +41,12 @@ export const ViewReviewModal = ({ isOpen, onClose, review }: ViewReviewModalProp
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
+    return new Date(dateString).toLocaleString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -51,7 +55,7 @@ export const ViewReviewModal = ({ isOpen, onClose, review }: ViewReviewModalProp
       <span
         key={i}
         className={`text-lg ${
-          i < rating ? 'text-yellow-400' : 'text-gray-300'
+          i < rating ? "text-yellow-400" : "text-gray-300"
         }`}
       >
         ★
@@ -60,12 +64,7 @@ export const ViewReviewModal = ({ isOpen, onClose, review }: ViewReviewModalProp
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      size="2xl"
-      scrollBehavior="inside"
-    >
+    <Modal isOpen={isOpen} onClose={onClose} size="2xl" scrollBehavior="inside">
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">
           <h3 className="text-xl font-semibold">Review Details</h3>
@@ -76,15 +75,15 @@ export const ViewReviewModal = ({ isOpen, onClose, review }: ViewReviewModalProp
             {/* Review Header */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                  <span className="text-blue-600 font-semibold text-lg">
+                <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                  <span className="text-[#FF7101] font-semibold text-lg">
                     {review.name.charAt(0).toUpperCase()}
                   </span>
                 </div>
                 <div>
                   <h4 className="font-semibold text-lg">{review.name}</h4>
                   <p className="text-sm text-gray-500">
-                    {review.country || 'Location not specified'}
+                    {review.country || "Location not specified"}
                   </p>
                 </div>
               </div>
@@ -104,23 +103,27 @@ export const ViewReviewModal = ({ isOpen, onClose, review }: ViewReviewModalProp
 
             {/* Review Content */}
             <div className="bg-gray-50 rounded-lg p-4">
-              <h5 className="font-medium text-gray-700 mb-2">Review Content:</h5>
-              <p className="text-gray-600 leading-relaxed">
-                {review.review}
-              </p>
+              <h5 className="font-medium text-gray-700 mb-2">
+                Review Content:
+              </h5>
+              <p className="text-gray-600 leading-relaxed">{review.review}</p>
             </div>
 
             {/* Review Metadata */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-blue-50 rounded-lg p-3">
-                <h6 className="font-medium text-blue-800 mb-1">Submitted Date</h6>
-                <p className="text-blue-600 text-sm">
+              <div className="bg-orange-50 rounded-lg p-3">
+                <h6 className="font-medium text-[#C14600] mb-1">
+                  Submitted Date
+                </h6>
+                <p className="text-[#FF7101] text-sm">
                   {formatDate(review.createdAt)}
                 </p>
               </div>
               {review.productsId && (
                 <div className="bg-green-50 rounded-lg p-3">
-                  <h6 className="font-medium text-green-800 mb-1">Product ID</h6>
+                  <h6 className="font-medium text-green-800 mb-1">
+                    Product ID
+                  </h6>
                   <p className="text-green-600 text-sm font-mono">
                     {review.productsId}
                   </p>
@@ -130,7 +133,9 @@ export const ViewReviewModal = ({ isOpen, onClose, review }: ViewReviewModalProp
 
             {/* Rating Breakdown */}
             <div className="bg-yellow-50 rounded-lg p-4">
-              <h6 className="font-medium text-yellow-800 mb-3">Rating Details</h6>
+              <h6 className="font-medium text-yellow-800 mb-3">
+                Rating Details
+              </h6>
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
                   {renderStars(review.rating)}

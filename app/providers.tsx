@@ -12,7 +12,7 @@ export function Providers({ children }: ProvidersProps) {
   return (
     <NextUIProvider>
       <NextTopLoader
-        color="#FF3E55"
+        color="#FF7101"
         height={5}
         zIndex={1000000}
         showSpinner={false}

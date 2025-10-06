@@ -17,10 +17,18 @@ import axios from "axios";
 import { toast } from "sonner";
 import dynamic from "next/dynamic";
 
-const RichTextEditor = dynamic(() => import("./rich-text-editor").then(mod => ({ default: mod.RichTextEditor })), {
-  ssr: false,
-  loading: () => <div className="h-[300px] bg-gray-100 rounded animate-pulse" />
-});
+const RichTextEditor = dynamic(
+  () =>
+    import("./rich-text-editor").then((mod) => ({
+      default: mod.RichTextEditor,
+    })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-[300px] bg-gray-100 rounded animate-pulse" />
+    ),
+  }
+);
 
 interface ArticleModalProps {
   article: IArticle | null;
@@ -62,7 +70,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
   }, [article, isOpen]);
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -90,22 +98,30 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
 
         try {
           // Get token from localStorage for client-side request
-          const token = localStorage.getItem('admin-token');
+          const token = localStorage.getItem("admin-token");
           console.log("Token found:", token ? "Yes" : "No");
           console.log("Backend URL:", process.env.NEXT_PUBLIC_BACKEND_URL);
 
-          const uploadResponse = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/admin/upload`, formData, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              ...(token && { Authorization: `Bearer ${token}` }),
-            },
-          });
+          const uploadResponse = await axios.post(
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/admin/upload`,
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+                ...(token && { Authorization: `Bearer ${token}` }),
+              },
+            }
+          );
           console.log("Upload response:", uploadResponse.data);
           imageUrl = uploadResponse.data.data.url;
         } catch (uploadError: any) {
           console.error("Upload error:", uploadError);
           console.error("Upload error response:", uploadError.response?.data);
-          toast.error(uploadError.response?.data?.error || uploadError.message || "Image upload failed");
+          toast.error(
+            uploadError.response?.data?.error ||
+              uploadError.message ||
+              "Image upload failed"
+          );
           setIsLoading(false);
           return;
         }
@@ -128,7 +144,11 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
       if (result.error) {
         toast.error(result.error);
       } else {
-        toast.success(article ? "Article updated successfully" : "Article created successfully");
+        toast.success(
+          article
+            ? "Article updated successfully"
+            : "Article created successfully"
+        );
         onClose();
         window.location.reload();
       }
@@ -154,7 +174,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
               onChange={(e) => handleInputChange("title", e.target.value)}
               isRequired
             />
-            
+
             <Textarea
               label="Detail"
               placeholder="Enter article detail/summary"
@@ -171,12 +191,16 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
-                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-[#FF7101] hover:file:bg-orange-100"
               />
               {(formData.image || imageFile) && (
                 <div className="mt-2">
                   <img
-                    src={imageFile ? URL.createObjectURL(imageFile) : formData.image}
+                    src={
+                      imageFile
+                        ? URL.createObjectURL(imageFile)
+                        : formData.image
+                    }
                     alt="Current banner"
                     className="w-32 h-20 object-cover rounded border"
                   />
@@ -206,7 +230,9 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
             color="primary"
             onPress={handleSubmit}
             isLoading={isLoading}
-            isDisabled={!formData.title || !formData.detail || !formData.content}
+            isDisabled={
+              !formData.title || !formData.detail || !formData.content
+            }
           >
             {article ? "Update" : "Create"}
           </Button>

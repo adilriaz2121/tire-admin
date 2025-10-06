@@ -177,11 +177,11 @@ Bridgestone,Potenza RE-71R,2023,Summer,245/40R18,Bridgestone,67890,Track focused
         </ModalHeader>
         <ModalBody>
           <div className="space-y-6">
-            <div className="bg-blue-50 p-4 rounded-lg">
-              <h3 className="font-semibold text-blue-900 mb-2">
+            <div className="bg-orange-50 p-4 rounded-lg">
+              <h3 className="font-semibold text-[#C14600] mb-2">
                 File Format Requirements:
               </h3>
-              <ul className="text-sm text-blue-800 space-y-1">
+              <ul className="text-sm text-[#E55A00] space-y-1">
                 <li>• Supported formats: CSV, Excel (.xlsx, .xls)</li>
                 <li>• Maximum file size: 5MB</li>
                 <li>
@@ -239,7 +239,7 @@ Bridgestone,Potenza RE-71R,2023,Summer,245/40R18,Bridgestone,67890,Track focused
                   <p className="text-gray-600">
                     Drag and drop your file here, or{" "}
                     <button
-                      className="text-blue-600 hover:text-blue-800 underline"
+                      className="text-[#FF7101] hover:text-[#E55A00] underline"
                       onClick={() => fileInputRef.current?.click()}
                       disabled={isUploading}
                     >
