@@ -56,11 +56,17 @@ export const OrdersPage: React.FC<OrdersProps> = ({
   const fetchOrders = useCallback(async () => {
     setLoading(true);
     try {
+      const statusParam = searchParams.get("status");
+      const validStatuses: Array<'confirmed' | 'shipped' | 'delivered' | 'cancelled'> = ['confirmed', 'shipped', 'delivered', 'cancelled'];
+      const status = statusParam && validStatuses.includes(statusParam as any) 
+        ? (statusParam as 'confirmed' | 'shipped' | 'delivered' | 'cancelled')
+        : undefined;
+
       const params = {
         page: parseInt(searchParams.get("page") || "1"),
         limit: parseInt(searchParams.get("limit") || "10"),
         search: searchParams.get("search") || undefined,
-        status: searchParams.get("status") || undefined,
+        status,
         dateFrom: searchParams.get("dateFrom") || undefined,
         dateTo: searchParams.get("dateTo") || undefined,
         minAmount: searchParams.get("minAmount")

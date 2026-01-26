@@ -3,6 +3,7 @@ interface Props {
    fill?: string;
    width?: number;
    height?: number;
+   className?: string;
 }
 
 export const EditIcon = ({fill, size, height, width, ...props}: Props) => {

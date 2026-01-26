@@ -109,12 +109,11 @@ export const RenderCell: React.FC<RenderCellProps> = ({
             onPress={() => onView(contact)}
             className="text-blue-600 hover:text-blue-800"
             startContent={
-              <EyeIcon 
-                fill="currentColor" 
-                size={16} 
-                width={16} 
+              <EyeIcon
+                fill="currentColor"
+                size={16}
+                width={16}
                 height={16}
-                className="w-4 h-4"
               />
             }
           >
@@ -155,12 +154,11 @@ export const RenderCell: React.FC<RenderCellProps> = ({
             onPress={handleDelete}
             className="text-red-600 hover:text-red-800"
             startContent={
-              <DeleteIcon 
-                fill="currentColor" 
-                size={16} 
-                width={16} 
+              <DeleteIcon
+                fill="currentColor"
+                size={16}
+                width={16}
                 height={16}
-                className="w-4 h-4"
               />
             }
           >

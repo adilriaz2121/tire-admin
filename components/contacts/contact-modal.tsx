@@ -73,11 +73,11 @@ export const ContactModal: React.FC<ContactModalProps> = ({
                 <h3>Contact Details</h3>
                 <Chip
                   className="capitalize"
-                  color={contact.isRead === "true" ? "success" : "warning"}
+                  color={contact.isRead ? "success" : "warning"}
                   size="sm"
                   variant="flat"
                 >
-                  {contact.isRead === "true" ? "Read" : "Unread"}
+                  {contact.isRead ? "Read" : "Unread"}
                 </Chip>
               </div>
             </ModalHeader>

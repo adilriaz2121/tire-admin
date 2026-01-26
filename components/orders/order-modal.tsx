@@ -37,14 +37,14 @@ export const OrderModal: React.FC<OrderModalProps> = ({
     setLoading(true);
     try {
       const result = await updateOrderStatus(order.id, newStatus);
-      if (result.error) {
-        toast.error(result.error);
-      } else {
+      if (result.success) {
         toast.success(
           `Order status updated to ${newStatus}. An email notification has been sent to the customer.`
         );
         onRefresh();
         onClose();
+      } else {
+        toast.error(result.message || "Failed to update order status");
       }
     } catch (error) {
       console.error("Failed to update order status:", error);

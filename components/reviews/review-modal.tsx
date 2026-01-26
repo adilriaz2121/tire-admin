@@ -35,11 +35,21 @@ export const ReviewModal = ({
   mode,
   onSuccess,
 }: ReviewModalProps) => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<Partial<IReview>>({
     name: "",
-    country: "",
-    review: "",
-    rating: 5,
+    email: "",
+    summary: "",
+    additionalComments: "",
+    vehicle: "",
+    milesDriven: "",
+    drivingStyle: "",
+    wouldBuyAgain: "",
+    Dry: 5,
+    Wet: 5,
+    Winter: 5,
+    Comfort: 5,
+    Noise: 5,
+    Treadwear: 5,
   });
   const [loading, setLoading] = useState(false);
 
@@ -248,7 +258,7 @@ export const ReviewModal = ({
             <Textarea
               label="Summary"
               placeholder="Enter review summary"
-              value={formData.summary}
+              value={formData.summary || ""}
               onChange={(e) => handleInputChange("summary", e.target.value)}
               minRows={3}
             />
@@ -256,7 +266,7 @@ export const ReviewModal = ({
             <Textarea
               label="Additional Comments"
               placeholder="Enter additional comments"
-              value={formData.additionalComments}
+              value={formData.additionalComments || ""}
               onChange={(e) => handleInputChange("additionalComments", e.target.value)}
               minRows={3}
             />
@@ -271,9 +281,14 @@ export const ReviewModal = ({
                   <strong>Submitted:</strong>{" "}
                   {new Date(review.createdAt).toLocaleString()}
                 </p>
-                {review.productsId && (
+                {review.size && (
                   <p>
-                    <strong>Product ID:</strong> {review.productsId}
+                    <strong>Size:</strong> {review.size}
+                  </p>
+                )}
+                {review.brand && (
+                  <p>
+                    <strong>Brand:</strong> {review.brand}
                   </p>
                 )}
               </div>
@@ -288,7 +303,7 @@ export const ReviewModal = ({
             color="primary"
             onPress={handleSubmit}
             isLoading={loading}
-            isDisabled={!formData.name.trim() || !formData.email.trim()}
+            isDisabled={!formData.name?.trim() || !formData.email?.trim()}
           >
             {loading ? "Updating..." : "Update Review"}
           </Button>

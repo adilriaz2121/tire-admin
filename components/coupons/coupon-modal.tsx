@@ -107,9 +107,9 @@ export const CouponModal: React.FC<CouponModalProps> = ({
         code: formData.code.trim().toUpperCase(),
         discountType: formData.discountType,
         discount: formData.discount,
-        validFrom: formData.validFrom ? new Date(formData.validFrom).toISOString() : null,
-        validTo: formData.validTo ? new Date(formData.validTo).toISOString() : null,
-        maxUse: formData.maxUse && formData.maxUse.trim() !== "" ? parseInt(formData.maxUse) : null,
+        validFrom: formData.validFrom ? new Date(formData.validFrom).toISOString() : undefined,
+        validTo: formData.validTo ? new Date(formData.validTo).toISOString() : undefined,
+        maxUse: formData.maxUse && formData.maxUse.trim() !== "" ? parseInt(formData.maxUse) : undefined,
         isActive: formData.isActive,
       };
 
