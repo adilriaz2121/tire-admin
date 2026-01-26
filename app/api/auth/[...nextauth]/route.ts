@@ -1,6 +1,11 @@
-import { authOptions } from "@/auth";
-import NextAuth from "next-auth";
+// NextAuth is not used in this application
+// We use custom JWT-based authentication instead
+import { NextRequest, NextResponse } from "next/server";
 
-const handler = NextAuth(authOptions);
+export async function GET(request: NextRequest) {
+    return NextResponse.json({ error: "Not implemented" }, { status: 404 });
+}
 
-export { handler as GET, handler as POST };
+export async function POST(request: NextRequest) {
+    return NextResponse.json({ error: "Not implemented" }, { status: 404 });
+}

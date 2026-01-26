@@ -33,7 +33,7 @@ export const ContactModal: React.FC<ContactModalProps> = ({
   const [loading, setLoading] = useState(false);
 
   const handleMarkAsRead = async () => {
-    if (contact.isRead === "true") return;
+    if (contact.isRead) return;
 
     setLoading(true);
     try {
@@ -147,7 +147,7 @@ export const ContactModal: React.FC<ContactModalProps> = ({
               <Button color="danger" variant="flat" onPress={onClose}>
                 Close
               </Button>
-              {contact.isRead === "false" && (
+              {!contact.isRead && (
                 <Button
                   color="success"
                   onPress={handleMarkAsRead}

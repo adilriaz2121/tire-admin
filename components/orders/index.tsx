@@ -97,8 +97,17 @@ export const OrdersPage: React.FC<OrdersProps> = ({
     fetchOrders();
   }, [fetchOrders]);
 
+  const [isEditMode, setIsEditMode] = useState(false);
+
   const handleView = (order: Order) => {
     setSelectedOrder(order);
+    setIsEditMode(false);
+    setIsModalOpen(true);
+  };
+
+  const handleEdit = (order: Order) => {
+    setSelectedOrder(order);
+    setIsEditMode(true);
     setIsModalOpen(true);
   };
 
@@ -125,7 +134,7 @@ export const OrdersPage: React.FC<OrdersProps> = ({
 
   const statusCounts = {
     total: meta.total,
-    pending: orders.filter((order) => order.status === "pending").length,
+    confirmed: orders.filter((order) => order.status === "confirmed").length,
     shipped: orders.filter((order) => order.status === "shipped").length,
     delivered: orders.filter((order) => order.status === "delivered").length,
     cancelled: orders.filter((order) => order.status === "cancelled").length,
@@ -152,8 +161,8 @@ export const OrdersPage: React.FC<OrdersProps> = ({
             <SelectItem key="" value="">
               All Status
             </SelectItem>
-            <SelectItem key="pending" value="pending">
-              Pending
+            <SelectItem key="confirmed" value="confirmed">
+              Confirmed
             </SelectItem>
             <SelectItem key="shipped" value="shipped">
               Shipped
@@ -189,16 +198,16 @@ export const OrdersPage: React.FC<OrdersProps> = ({
       {/* Status Overview */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <div className="bg-orange-50 p-3 rounded-lg text-center">
-          <p className="text-2xl font-bold text-[#FF7101]">
+          <p className="text-2xl font-bold text-[#05CB14]">
             {statusCounts.total}
           </p>
-          <p className="text-sm text-[#FF7101]">Total Orders</p>
+          <p className="text-sm text-[#05CB14]">Total Orders</p>
         </div>
         <div className="bg-yellow-50 p-3 rounded-lg text-center">
           <p className="text-2xl font-bold text-yellow-600">
-            {statusCounts.pending}
+            {statusCounts.confirmed}
           </p>
-          <p className="text-sm text-yellow-600">Pending</p>
+          <p className="text-sm text-yellow-600">Confirmed</p>
         </div>
         <div className="bg-orange-50 p-3 rounded-lg text-center">
           <p className="text-2xl font-bold text-orange-600">
@@ -274,6 +283,7 @@ export const OrdersPage: React.FC<OrdersProps> = ({
                     order={order}
                     columnKey={columnKey as string}
                     onView={handleView}
+                    onEdit={handleEdit}
                     onRefresh={fetchOrders}
                   />
                 </TableCell>
@@ -312,9 +322,11 @@ export const OrdersPage: React.FC<OrdersProps> = ({
         <OrderModal
           order={selectedOrder}
           isOpen={isModalOpen}
+          isEditMode={isEditMode}
           onClose={() => {
             setIsModalOpen(false);
             setSelectedOrder(null);
+            setIsEditMode(false);
           }}
           onRefresh={fetchOrders}
         />

@@ -2,28 +2,50 @@
 
 import axiosInstance from "@/config/axios";
 
+export interface OrderItem {
+  id: string;
+  orderId: string;
+  productName: string;
+  productPrice: number;
+  productQuantity: number;
+  productTotal: number;
+  productImage: string;
+  productBrand: string;
+  productModel: string;
+  productYear: string;
+  productTrim: string;
+  productSize: string;
+  productMfg: string;
+  productDescription: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Order {
   id: string;
-  name: string;
+  userName: string;
   email: string;
   phone: string;
   totalAmount: number;
-  productIds: string[];
   address: string;
   city: string;
   state: string;
   zip: string;
   country: string;
-  total: number;
-  status: 'pending' | 'shipped' | 'delivered' | 'cancelled';
-  paymentIntentId: string;
-  currency: string;
-  userInfo: any;
-  shippingInfo: any;
-  pricingInfo: any;
-  productInfo: any;
-  createdAt: string;
-  updatedAt: string;
+  discount?: number | null;
+  couponCode?: string | null;
+  status: 'confirmed' | 'shipped' | 'delivered' | 'cancelled';
+  shippingLocation: 'MobileInstaller' | 'LocalInstaller' | 'ShipToMe' | 'FedExPickup';
+  orderItems: OrderItem[];
+  createdAt: string | null;
+  updatedAt: string | null;
+  // Legacy fields for backward compatibility
+  name?: string;
+  total?: number;
+  paymentIntentId?: string;
+  currency?: string;
+  productIds?: string[];
+  productInfo?: any;
 }
 
 export interface OrderStats {
@@ -58,14 +80,17 @@ export interface OrdersResponse {
 export const getAllOrders = async (params?: {
   page?: number;
   limit?: number;
-  status?: string;
+  status?: 'confirmed' | 'shipped' | 'delivered' | 'cancelled';
   search?: string;
   email?: string;
-  name?: string;
+  userName?: string;
+  name?: string; // Legacy support
   paymentIntentId?: string;
   country?: string;
   city?: string;
   state?: string;
+  shippingLocation?: 'MobileInstaller' | 'LocalInstaller' | 'ShipToMe' | 'FedExPickup';
+  couponCode?: string;
   dateFrom?: string;
   dateTo?: string;
   minAmount?: number;
@@ -77,13 +102,16 @@ export const getAllOrders = async (params?: {
     if (params?.page) queryParams.append("page", params.page.toString());
     if (params?.limit) queryParams.append("limit", params.limit.toString());
     if (params?.status) queryParams.append("status", params.status);
+  if (params?.shippingLocation) queryParams.append("shippingLocation", params.shippingLocation);
     if (params?.search) queryParams.append("search", params.search);
     if (params?.email) queryParams.append("email", params.email);
-    if (params?.name) queryParams.append("name", params.name);
+    if (params?.userName) queryParams.append("userName", params.userName);
+    if (params?.name) queryParams.append("userName", params.name); // Legacy support
     if (params?.paymentIntentId) queryParams.append("paymentIntentId", params.paymentIntentId);
     if (params?.country) queryParams.append("country", params.country);
     if (params?.city) queryParams.append("city", params.city);
     if (params?.state) queryParams.append("state", params.state);
+    if (params?.couponCode) queryParams.append("couponCode", params.couponCode);
     if (params?.dateFrom) queryParams.append("dateFrom", params.dateFrom);
     if (params?.dateTo) queryParams.append("dateTo", params.dateTo);
     if (params?.minAmount) queryParams.append("minAmount", params.minAmount.toString());
@@ -108,9 +136,13 @@ export const getOrderById = async (id: string): Promise<{ success: boolean; data
   }
 };
 
-export const updateOrderStatus = async (id: string, status: 'pending' | 'shipped' | 'delivered' | 'cancelled'): Promise<{ success: boolean; message: string; data: { order: Order } }> => {
+export const updateOrderStatus = async (id: string, status: 'confirmed' | 'shipped' | 'delivered' | 'cancelled', shippingLocation?: 'MobileInstaller' | 'LocalInstaller' | 'ShipToMe' | 'FedExPickup'): Promise<{ success: boolean; message: string; data: { order: Order } }> => {
   try {
-    const response = await axiosInstance.patch(`/api/orders/${id}/status`, { status });
+    const body: any = {};
+    if (status) body.status = status;
+    if (shippingLocation) body.shippingLocation = shippingLocation;
+    
+    const response = await axiosInstance.patch(`/api/orders/${id}`, body);
     return response.data;
   } catch (error) {
     console.error("Error updating order status:", error);

@@ -11,15 +11,9 @@ import {
   Chip,
 } from "@nextui-org/react";
 
-interface Review {
-  id: string;
-  name: string;
-  country: string;
-  review: string;
-  rating: number;
-  createdAt: string;
-  productsId?: string;
-}
+import { IReview } from "@/helpers/types";
+
+type Review = IReview;
 
 interface ViewReviewModalProps {
   isOpen: boolean;
@@ -33,6 +27,19 @@ export const ViewReviewModal = ({
   review,
 }: ViewReviewModalProps) => {
   if (!review) return null;
+
+  const calculateAverageRating = (review: Review): number => {
+    const ratings = [
+      review.Dry,
+      review.Wet,
+      review.Winter,
+      review.Comfort,
+      review.Noise,
+      review.Treadwear,
+    ];
+    const sum = ratings.reduce((a, b) => a + b, 0);
+    return Math.round((sum / ratings.length) * 10) / 10;
+  };
 
   const getRatingColor = (rating: number) => {
     if (rating >= 4) return "success";
@@ -54,9 +61,8 @@ export const ViewReviewModal = ({
     return Array.from({ length: 5 }, (_, i) => (
       <span
         key={i}
-        className={`text-lg ${
-          i < rating ? "text-yellow-400" : "text-gray-300"
-        }`}
+        className={`text-lg ${i < Math.round(rating) ? "text-yellow-400" : "text-gray-300"
+          }`}
       >
         ★
       </span>
@@ -75,80 +81,141 @@ export const ViewReviewModal = ({
             {/* Review Header */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
-                  <span className="text-[#FF7101] font-semibold text-lg">
+                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                  <span className="text-black font-semibold text-lg">
                     {review.name.charAt(0).toUpperCase()}
                   </span>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-lg">{review.name}</h4>
-                  <p className="text-sm text-gray-500">
-                    {review.country || "Location not specified"}
-                  </p>
+                  <h4 className="font-semibold text-lg text-black">{review.name}</h4>
+                  <p className="text-sm text-gray-500">{review.email}</p>
                 </div>
               </div>
               <div className="text-right">
                 <div className="flex items-center gap-2 mb-1">
-                  {renderStars(review.rating)}
+                  {renderStars(calculateAverageRating(review))}
                 </div>
                 <Chip
-                  color={getRatingColor(review.rating)}
                   variant="flat"
                   size="sm"
+                  className="bg-gray-100 text-black"
                 >
-                  {review.rating} out of 5
+                  {calculateAverageRating(review).toFixed(1)} / 5.0
                 </Chip>
               </div>
             </div>
 
-            {/* Review Content */}
+            {/* Product Info */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-gray-50 rounded-lg p-3">
+                <h6 className="font-medium text-gray-700 mb-1">Brand</h6>
+                <p className="text-black text-sm font-semibold">{review.brand}</p>
+              </div>
+              <div className="bg-gray-50 rounded-lg p-3">
+                <h6 className="font-medium text-gray-700 mb-1">Size</h6>
+                <p className="text-black text-sm font-semibold">{review.size}</p>
+              </div>
+            </div>
+
+            {/* Rating Breakdown */}
             <div className="bg-gray-50 rounded-lg p-4">
-              <h5 className="font-medium text-gray-700 mb-2">
-                Review Content:
-              </h5>
-              <p className="text-gray-600 leading-relaxed">{review.review}</p>
+              <h6 className="font-medium text-gray-700 mb-3">
+                Category Ratings
+              </h6>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <div>
+                  <p className="text-xs text-gray-600">Dry</p>
+                  <div className="flex items-center gap-1">
+                    {renderStars(review.Dry)}
+                    <span className="text-sm font-semibold text-black">{review.Dry}/5</span>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-600">Wet</p>
+                  <div className="flex items-center gap-1">
+                    {renderStars(review.Wet)}
+                    <span className="text-sm font-semibold text-black">{review.Wet}/5</span>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-600">Winter</p>
+                  <div className="flex items-center gap-1">
+                    {renderStars(review.Winter)}
+                    <span className="text-sm font-semibold text-black">{review.Winter}/5</span>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-600">Comfort</p>
+                  <div className="flex items-center gap-1">
+                    {renderStars(review.Comfort)}
+                    <span className="text-sm font-semibold text-black">{review.Comfort}/5</span>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-600">Noise</p>
+                  <div className="flex items-center gap-1">
+                    {renderStars(review.Noise)}
+                    <span className="text-sm font-semibold text-black">{review.Noise}/5</span>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-600">Treadwear</p>
+                  <div className="flex items-center gap-1">
+                    {renderStars(review.Treadwear)}
+                    <span className="text-sm font-semibold text-black">{review.Treadwear}/5</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Review Content */}
+            {review.summary && (
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h5 className="font-medium text-gray-700 mb-2">Summary</h5>
+                <p className="text-gray-600 leading-relaxed">{review.summary}</p>
+              </div>
+            )}
+
+            {review.additionalComments && (
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h5 className="font-medium text-gray-700 mb-2">Additional Comments</h5>
+                <p className="text-gray-600 leading-relaxed">{review.additionalComments}</p>
+              </div>
+            )}
+
+            {/* Vehicle & Purchase Info */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-gray-50 rounded-lg p-3">
+                <h6 className="font-medium text-gray-700 mb-1">Vehicle</h6>
+                <p className="text-black text-sm">{review.vehicle}</p>
+              </div>
+              <div className="bg-gray-50 rounded-lg p-3">
+                <h6 className="font-medium text-gray-700 mb-1">Miles Driven</h6>
+                <p className="text-black text-sm">{review.milesDriven}</p>
+              </div>
+              <div className="bg-gray-50 rounded-lg p-3">
+                <h6 className="font-medium text-gray-700 mb-1">Driving Style</h6>
+                <p className="text-black text-sm capitalize">{review.drivingStyle}</p>
+              </div>
+              <div className="bg-gray-50 rounded-lg p-3">
+                <h6 className="font-medium text-gray-700 mb-1">Would Buy Again</h6>
+                <p className="text-black text-sm capitalize">{review.wouldBuyAgain}</p>
+              </div>
             </div>
 
             {/* Review Metadata */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-orange-50 rounded-lg p-3">
-                <h6 className="font-medium text-[#C14600] mb-1">
-                  Submitted Date
-                </h6>
-                <p className="text-[#FF7101] text-sm">
-                  {formatDate(review.createdAt)}
+              <div className="bg-gray-50 rounded-lg p-3">
+                <h6 className="font-medium text-gray-700 mb-1">Purchase Date</h6>
+                <p className="text-black text-sm">
+                  {new Date(review.purchaseDate).toLocaleDateString()}
                 </p>
               </div>
-              {review.productsId && (
-                <div className="bg-green-50 rounded-lg p-3">
-                  <h6 className="font-medium text-green-800 mb-1">
-                    Product ID
-                  </h6>
-                  <p className="text-green-600 text-sm font-mono">
-                    {review.productsId}
-                  </p>
-                </div>
-              )}
-            </div>
-
-            {/* Rating Breakdown */}
-            <div className="bg-yellow-50 rounded-lg p-4">
-              <h6 className="font-medium text-yellow-800 mb-3">
-                Rating Details
-              </h6>
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                  {renderStars(review.rating)}
-                </div>
-                <div className="text-sm text-yellow-700">
-                  <p>
-                    {review.rating === 5 && "Excellent"}
-                    {review.rating === 4 && "Good"}
-                    {review.rating === 3 && "Average"}
-                    {review.rating === 2 && "Poor"}
-                    {review.rating === 1 && "Very Poor"}
-                  </p>
-                </div>
+              <div className="bg-gray-50 rounded-lg p-3">
+                <h6 className="font-medium text-gray-700 mb-1">Submitted Date</h6>
+                <p className="text-black text-sm">
+                  {formatDate(review.createdAt)}
+                </p>
               </div>
             </div>
           </div>

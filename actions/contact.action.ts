@@ -9,7 +9,7 @@ export interface Contact {
   phone: string;
   subject: string;
   message: string;
-  isRead: string;
+  isRead: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -44,7 +44,7 @@ export interface ContactsResponse {
 export const getAllContacts = async (params?: {
   page?: number;
   limit?: number;
-  isRead?: string;
+  isRead?: boolean | string;
   search?: string;
   email?: string;
   name?: string;
@@ -57,7 +57,13 @@ export const getAllContacts = async (params?: {
     
     if (params?.page) queryParams.append("page", params.page.toString());
     if (params?.limit) queryParams.append("limit", params.limit.toString());
-    if (params?.isRead) queryParams.append("isRead", params.isRead);
+    if (params?.isRead !== undefined) {
+      // Handle both boolean and string (for URL params)
+      const isReadValue = typeof params.isRead === 'boolean' 
+        ? params.isRead.toString() 
+        : params.isRead;
+      queryParams.append("isRead", isReadValue);
+    }
     if (params?.search) queryParams.append("search", params.search);
     if (params?.email) queryParams.append("email", params.email);
     if (params?.name) queryParams.append("name", params.name);

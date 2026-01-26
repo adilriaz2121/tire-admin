@@ -119,8 +119,8 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
           console.error("Upload error response:", uploadError.response?.data);
           toast.error(
             uploadError.response?.data?.error ||
-              uploadError.message ||
-              "Image upload failed"
+            uploadError.message ||
+            "Image upload failed"
           );
           setIsLoading(false);
           return;
@@ -191,7 +191,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
-                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-[#FF7101] hover:file:bg-orange-100"
+                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-[#05CB14] hover:file:bg-orange-100"
               />
               {(formData.image || imageFile) && (
                 <div className="mt-2">

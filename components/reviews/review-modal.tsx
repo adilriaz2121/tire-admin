@@ -16,15 +16,9 @@ import {
 import { updateReview } from "@/actions/review.action";
 import { toast } from "sonner";
 
-interface Review {
-  id: string;
-  name: string;
-  country: string;
-  review: string;
-  rating: number;
-  createdAt: string;
-  productsId?: string;
-}
+import { IReview } from "@/helpers/types";
+
+type Review = IReview;
 
 interface ReviewModalProps {
   isOpen: boolean;
@@ -52,10 +46,20 @@ export const ReviewModal = ({
   useEffect(() => {
     if (review) {
       setFormData({
-        name: review.name,
-        country: review.country || "",
-        review: review.review,
-        rating: review.rating,
+        name: review.name || "",
+        email: review.email || "",
+        summary: review.summary || "",
+        additionalComments: review.additionalComments || "",
+        vehicle: review.vehicle || "",
+        milesDriven: review.milesDriven || "",
+        drivingStyle: review.drivingStyle || "",
+        wouldBuyAgain: review.wouldBuyAgain || "",
+        Dry: review.Dry || 5,
+        Wet: review.Wet || 5,
+        Winter: review.Winter || 5,
+        Comfort: review.Comfort || 5,
+        Noise: review.Noise || 5,
+        Treadwear: review.Treadwear || 5,
       });
     }
   }, [review]);
@@ -115,37 +119,146 @@ export const ReviewModal = ({
                 isRequired
               />
               <Input
-                label="Country"
-                placeholder="Enter country"
-                value={formData.country}
-                onChange={(e) => handleInputChange("country", e.target.value)}
+                label="Email"
+                placeholder="Enter email"
+                type="email"
+                value={formData.email}
+                onChange={(e) => handleInputChange("email", e.target.value)}
+                isRequired
               />
             </div>
 
-            <Select
-              label="Rating"
-              placeholder="Select rating"
-              selectedKeys={[formData.rating.toString()]}
-              onChange={(e) =>
-                handleInputChange("rating", parseInt(e.target.value))
-              }
-              isRequired
-            >
-              {ratingOptions.map((option) => (
-                <SelectItem key={option.key} value={option.key}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </Select>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Input
+                label="Vehicle"
+                placeholder="Enter vehicle"
+                value={formData.vehicle}
+                onChange={(e) => handleInputChange("vehicle", e.target.value)}
+              />
+              <Input
+                label="Miles Driven"
+                placeholder="Enter miles driven"
+                value={formData.milesDriven}
+                onChange={(e) => handleInputChange("milesDriven", e.target.value)}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Input
+                label="Driving Style"
+                placeholder="Enter driving style"
+                value={formData.drivingStyle}
+                onChange={(e) => handleInputChange("drivingStyle", e.target.value)}
+              />
+              <Input
+                label="Would Buy Again"
+                placeholder="Yes/No"
+                value={formData.wouldBuyAgain}
+                onChange={(e) => handleInputChange("wouldBuyAgain", e.target.value)}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <Select
+                label="Dry Rating"
+                selectedKeys={[(formData.Dry || 5).toString()]}
+                onSelectionChange={(keys) => {
+                  const value = Array.from(keys)[0] as string;
+                  handleInputChange("Dry", parseInt(value));
+                }}
+              >
+                {ratingOptions.map((option) => (
+                  <SelectItem key={option.key} value={option.key}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </Select>
+              <Select
+                label="Wet Rating"
+                selectedKeys={[(formData.Wet || 5).toString()]}
+                onSelectionChange={(keys) => {
+                  const value = Array.from(keys)[0] as string;
+                  handleInputChange("Wet", parseInt(value));
+                }}
+              >
+                {ratingOptions.map((option) => (
+                  <SelectItem key={option.key} value={option.key}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </Select>
+              <Select
+                label="Winter Rating"
+                selectedKeys={[(formData.Winter || 5).toString()]}
+                onSelectionChange={(keys) => {
+                  const value = Array.from(keys)[0] as string;
+                  handleInputChange("Winter", parseInt(value));
+                }}
+              >
+                {ratingOptions.map((option) => (
+                  <SelectItem key={option.key} value={option.key}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </Select>
+              <Select
+                label="Comfort Rating"
+                selectedKeys={[(formData.Comfort || 5).toString()]}
+                onSelectionChange={(keys) => {
+                  const value = Array.from(keys)[0] as string;
+                  handleInputChange("Comfort", parseInt(value));
+                }}
+              >
+                {ratingOptions.map((option) => (
+                  <SelectItem key={option.key} value={option.key}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </Select>
+              <Select
+                label="Noise Rating"
+                selectedKeys={[(formData.Noise || 5).toString()]}
+                onSelectionChange={(keys) => {
+                  const value = Array.from(keys)[0] as string;
+                  handleInputChange("Noise", parseInt(value));
+                }}
+              >
+                {ratingOptions.map((option) => (
+                  <SelectItem key={option.key} value={option.key}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </Select>
+              <Select
+                label="Treadwear Rating"
+                selectedKeys={[(formData.Treadwear || 5).toString()]}
+                onSelectionChange={(keys) => {
+                  const value = Array.from(keys)[0] as string;
+                  handleInputChange("Treadwear", parseInt(value));
+                }}
+              >
+                {ratingOptions.map((option) => (
+                  <SelectItem key={option.key} value={option.key}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </Select>
+            </div>
 
             <Textarea
-              label="Review Content"
-              placeholder="Enter review content"
-              value={formData.review}
-              onChange={(e) => handleInputChange("review", e.target.value)}
-              minRows={4}
-              maxRows={8}
-              isRequired
+              label="Summary"
+              placeholder="Enter review summary"
+              value={formData.summary}
+              onChange={(e) => handleInputChange("summary", e.target.value)}
+              minRows={3}
+            />
+
+            <Textarea
+              label="Additional Comments"
+              placeholder="Enter additional comments"
+              value={formData.additionalComments}
+              onChange={(e) => handleInputChange("additionalComments", e.target.value)}
+              minRows={3}
             />
 
             {/* Review Info */}
@@ -175,7 +288,7 @@ export const ReviewModal = ({
             color="primary"
             onPress={handleSubmit}
             isLoading={loading}
-            isDisabled={!formData.name.trim() || !formData.review.trim()}
+            isDisabled={!formData.name.trim() || !formData.email.trim()}
           >
             {loading ? "Updating..." : "Update Review"}
           </Button>

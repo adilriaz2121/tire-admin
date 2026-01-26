@@ -68,8 +68,35 @@ export const CouponModal: React.FC<CouponModalProps> = ({
   };
 
   const handleSubmit = async () => {
-    if (!formData.code || formData.discount <= 0) {
-      toast.error("Please fill in all required fields");
+    if (!formData.code || formData.code.trim() === "") {
+      toast.error("Coupon code is required");
+      return;
+    }
+
+    if (formData.discount <= 0) {
+      toast.error("Discount must be greater than 0");
+      return;
+    }
+
+    // Validate discount based on type
+    if (formData.discountType === "percentage" && formData.discount > 100) {
+      toast.error("Percentage discount cannot exceed 100%");
+      return;
+    }
+
+    // Validate date range
+    if (formData.validFrom && formData.validTo) {
+      const fromDate = new Date(formData.validFrom);
+      const toDate = new Date(formData.validTo);
+      if (fromDate > toDate) {
+        toast.error("Valid From date must be before Valid To date");
+        return;
+      }
+    }
+
+    // Validate max use
+    if (formData.maxUse && parseInt(formData.maxUse) <= 0) {
+      toast.error("Max usage must be a positive number");
       return;
     }
 
@@ -77,12 +104,12 @@ export const CouponModal: React.FC<CouponModalProps> = ({
 
     try {
       const couponData = {
-        code: formData.code,
+        code: formData.code.trim().toUpperCase(),
         discountType: formData.discountType,
         discount: formData.discount,
-        validFrom: formData.validFrom ? new Date(formData.validFrom).toISOString() : undefined,
-        validTo: formData.validTo ? new Date(formData.validTo).toISOString() : undefined,
-        maxUse: formData.maxUse ? parseInt(formData.maxUse) : undefined,
+        validFrom: formData.validFrom ? new Date(formData.validFrom).toISOString() : null,
+        validTo: formData.validTo ? new Date(formData.validTo).toISOString() : null,
+        maxUse: formData.maxUse && formData.maxUse.trim() !== "" ? parseInt(formData.maxUse) : null,
         isActive: formData.isActive,
       };
 
@@ -128,7 +155,10 @@ export const CouponModal: React.FC<CouponModalProps> = ({
                 label="Discount Type"
                 placeholder="Select discount type"
                 selectedKeys={[formData.discountType]}
-                onChange={(e) => handleInputChange("discountType", e.target.value)}
+                onSelectionChange={(keys) => {
+                  const value = Array.from(keys)[0] as "percentage" | "fixed";
+                  handleInputChange("discountType", value || "percentage");
+                }}
                 isRequired
               >
                 <SelectItem key="percentage" value="percentage">
@@ -143,8 +173,15 @@ export const CouponModal: React.FC<CouponModalProps> = ({
                 label="Discount Value"
                 placeholder="Enter discount value"
                 type="number"
+                min={0}
+                max={formData.discountType === "percentage" ? 100 : undefined}
+                step={formData.discountType === "percentage" ? 0.01 : 0.01}
                 value={formData.discount.toString()}
-                onChange={(e) => handleInputChange("discount", parseFloat(e.target.value) || 0)}
+                onChange={(e) => {
+                  const value = parseFloat(e.target.value) || 0;
+                  const maxValue = formData.discountType === "percentage" ? 100 : undefined;
+                  handleInputChange("discount", maxValue ? Math.min(value, maxValue) : value);
+                }}
                 isRequired
                 endContent={
                   formData.discountType === "percentage" ? "%" : "$"
@@ -158,6 +195,8 @@ export const CouponModal: React.FC<CouponModalProps> = ({
                 type="date"
                 value={formData.validFrom}
                 onChange={(e) => handleInputChange("validFrom", e.target.value)}
+                description="Optional start date"
+                max={formData.validTo || undefined}
               />
               
               <Input
@@ -165,6 +204,8 @@ export const CouponModal: React.FC<CouponModalProps> = ({
                 type="date"
                 value={formData.validTo}
                 onChange={(e) => handleInputChange("validTo", e.target.value)}
+                description="Optional expiry date"
+                min={formData.validFrom || undefined}
               />
             </div>
 
@@ -172,8 +213,15 @@ export const CouponModal: React.FC<CouponModalProps> = ({
               label="Max Usage"
               placeholder="Enter maximum usage (optional)"
               type="number"
+              min={1}
               value={formData.maxUse}
-              onChange={(e) => handleInputChange("maxUse", e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value === "" || parseInt(value) > 0) {
+                  handleInputChange("maxUse", value);
+                }
+              }}
+              description="Leave empty for unlimited usage"
             />
 
             <div className="flex items-center gap-2">

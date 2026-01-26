@@ -28,18 +28,13 @@ export const routes = [
     href: "/dashboard/contacts",
     admin: true,
   },
-  {
-    title: "Products",
-    icon: Package,
-    href: "/dashboard/products",
-    admin: true,
-  },
-  {
-    title: "Articles",
-    icon: FileText,
-    href: "/dashboard/articles",
-    admin: true,
-  },
+
+  // {
+  //   title: "Articles",
+  //   icon: FileText,
+  //   href: "/dashboard/articles",
+  //   admin: true,
+  // },
   {
     title: "Coupons",
     icon: Tag,

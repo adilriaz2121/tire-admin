@@ -15,13 +15,13 @@ module.exports = {
     extend: {
       colors: {
         primary: {
-          DEFAULT: "#FF7101",
+          DEFAULT: "#05CB14",
           50: "#FFF4ED",
           100: "#FFE6D5",
           200: "#FFCCAA",
           300: "#FFA574",
           400: "#FF7B3C",
-          500: "#FF7101",
+          500: "#05CB14",
           600: "#E55A00",
           700: "#C14600",
           800: "#9E3700",
@@ -37,13 +37,13 @@ module.exports = {
         light: {
           colors: {
             primary: {
-              DEFAULT: "#FF7101",
+              DEFAULT: "#05CB14",
               50: "#FFF4ED",
               100: "#FFE6D5",
               200: "#FFCCAA",
               300: "#FFA574",
               400: "#FF7B3C",
-              500: "#FF7101",
+              500: "#05CB14",
               600: "#E55A00",
               700: "#C14600",
               800: "#9E3700",
@@ -54,13 +54,13 @@ module.exports = {
         dark: {
           colors: {
             primary: {
-              DEFAULT: "#FF7101",
+              DEFAULT: "#05CB14",
               50: "#FFF4ED",
               100: "#FFE6D5",
               200: "#FFCCAA",
               300: "#FFA574",
               400: "#FF7B3C",
-              500: "#FF7101",
+              500: "#05CB14",
               600: "#E55A00",
               700: "#C14600",
               800: "#9E3700",

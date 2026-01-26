@@ -10,16 +10,12 @@ const reviews = async ({
     page?: number;
     limit?: number;
     query?: string;
-    rating?: number;
-    productId?: string;
   };
 }) => {
   const { error, data, meta } = await getAllReviews({
     page: searchParams.page,
     limit: searchParams.limit,
     query: searchParams.query,
-    rating: searchParams.rating,
-    productId: searchParams.productId,
   });
   
   if (error || !meta) return <Error error={error || "No Data found"} />;

@@ -33,8 +33,8 @@ export const Coupons: React.FC<CouponsProps> = ({ data, meta }) => {
     { name: "DISCOUNT", uid: "discount" },
     { name: "TYPE", uid: "discountType" },
     { name: "STATUS", uid: "isActive" },
-    { name: "USED", uid: "usedCount" },
-    { name: "VALID TO", uid: "validTo" },
+    { name: "USAGE", uid: "usage" },
+    { name: "VALIDITY", uid: "validity" },
     { name: "ACTIONS", uid: "actions" },
   ];
 
@@ -69,7 +69,7 @@ export const Coupons: React.FC<CouponsProps> = ({ data, meta }) => {
         </div>
         <button
           onClick={handleAdd}
-          className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FF7101] to-[#E55A00] text-white px-6 py-3 rounded-xl font-semibold hover:opacity-90 transition-all duration-200 shadow-lg hover:shadow-xl"
+          className="inline-flex items-center gap-2 bg-[#05CB14]  text-white px-6 py-3 rounded-xl font-semibold hover:opacity-90 transition-all duration-200 shadow-lg hover:shadow-xl"
         >
           <svg
             className="w-5 h-5"
@@ -162,9 +162,10 @@ export const Coupons: React.FC<CouponsProps> = ({ data, meta }) => {
               className="w-32"
               variant="bordered"
               selectedKeys={[meta.limit.toString()]}
-              onChange={(e) =>
-                updateSearchParams({ limit: e.target.value, page: "1" })
-              }
+              onSelectionChange={(keys) => {
+                const limit = Array.from(keys)[0] as string;
+                updateSearchParams({ limit, page: "1" });
+              }}
             >
               <SelectItem key="10" value="10">
                 10 per page

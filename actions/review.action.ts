@@ -7,18 +7,14 @@ export async function getAllReviews({
     query,
     page,
     limit,
-    rating,
-    productId,
 }: {
     query?: string;
     page?: number;
     limit?: number;
-    rating?: number;
-    productId?: string;
 }): Promise<Result<{ items: IReview[] }>> {
     try {
         const response = await axiosInstance.get("/api/admin/reviews", {
-            params: { q: query, page, limit, rating, productId },
+            params: { q: query, page, limit },
         });
 
         return { data: { items: response.data.items }, meta: response.data.meta };
@@ -43,7 +39,7 @@ export async function getReviewById(
 
 export async function updateReview(
     id: string,
-    data: Partial<Omit<IReview, "id" | "createdAt">>
+    data: Partial<IReview>
 ): Promise<Result<IReview>> {
     try {
         const response = await axiosInstance.put(`/api/admin/reviews/${id}`, data);

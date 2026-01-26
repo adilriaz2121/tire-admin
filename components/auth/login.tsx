@@ -24,10 +24,7 @@ function Login({ searchParams }: { searchParams: { error?: string } }) {
         if (result.error) {
           toast.error(result.error);
         } else {
-          // Store token in localStorage for client-side access
-          if (result.data?.token) {
-            localStorage.setItem("admin-token", result.data.token);
-          }
+          // Token is already stored in cookies by the signIn action
           toast.success("Login successful");
           router.push("/dashboard");
         }
@@ -100,7 +97,7 @@ function Login({ searchParams }: { searchParams: { error?: string } }) {
                         type="email"
                         name="email"
                         placeholder="Enter email to Login"
-                        className="block w-full py-4 pl-10 pr-4 text-black  placeholder-gray-500 transition-all duration-200 border border-gray-200 rounded-md bg-gray-50   focus:outline-none focus:border-[#FF7101] focus:bg-white caret-[#FF7101]"
+                        className="block w-full py-4 pl-10 pr-4 text-black  placeholder-gray-500 transition-all duration-200 border border-gray-200 rounded-md bg-gray-50   focus:outline-none focus:border-[#05CB14] focus:bg-white caret-[#05CB14]"
                       />
                     </div>
                     <ErrorMessage
@@ -135,7 +132,7 @@ function Login({ searchParams }: { searchParams: { error?: string } }) {
                         type="password"
                         name="password"
                         placeholder="Enter your password"
-                        className="block w-full py-4 pl-10 pr-4 text-black placeholder-gray-500 transition-all duration-200 border border-gray-200 rounded-md bg-gray-50  focus:outline-none focus:border-[#FF7101] focus:bg-white caret-[#FF7101]"
+                        className="block w-full py-4 pl-10 pr-4 text-black placeholder-gray-500 transition-all duration-200 border border-gray-200 rounded-md bg-gray-50  focus:outline-none focus:border-[#05CB14] focus:bg-white caret-[#05CB14]"
                       />
                     </div>
                     <ErrorMessage
@@ -148,7 +145,7 @@ function Login({ searchParams }: { searchParams: { error?: string } }) {
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="inline-flex items-center  justify-center w-full px-4 my-7 py-4 text-base font-semibold text-white transition-all duration-200 border border-transparent rounded-xl bg-gradient-to-r from-[#FF7101] to-[#E55A00]  focus:outline-none hover:opacity-80 focus:opacity-80"
+                      className="inline-flex items-center  justify-center w-full px-4 my-7 py-4 text-base font-semibold text-white transition-all duration-200 border border-transparent rounded-xl bg-gradient-to-r from-[#05CB14] to-[#E55A00]  focus:outline-none hover:opacity-80 focus:opacity-80"
                     >
                       {loading ? (
                         <>

@@ -41,7 +41,6 @@ export interface OrdersChartData {
 export interface DashboardData {
   cards: AdminStats;
   charts: {
-    products: ProductsChartData;
     orders: OrdersChartData;
   };
 }

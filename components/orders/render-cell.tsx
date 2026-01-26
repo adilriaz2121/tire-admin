@@ -1,14 +1,16 @@
 "use client";
 
 import React from "react";
-import { Chip, Tooltip, Button } from "@nextui-org/react";
-import { Order, updateOrderStatus } from "@/actions/order.action";
+import { Chip, Button } from "@nextui-org/react";
+import { Order } from "@/actions/order.action";
 import { EyeIcon } from "../icons/table/eye-icon";
+import { EditIcon } from "../icons/table/edit-icon";
 
 interface RenderCellProps {
   order: Order;
   columnKey: string;
   onView: (order: Order) => void;
+  onEdit: (order: Order) => void;
   onRefresh: () => void;
 }
 
@@ -16,20 +18,9 @@ export const RenderCell: React.FC<RenderCellProps> = ({
   order,
   columnKey,
   onView,
+  onEdit,
   onRefresh,
 }) => {
-  const handleStatusChange = async (
-    newStatus: "pending" | "shipped" | "delivered" | "cancelled"
-  ) => {
-    if (newStatus === order.status) return;
-
-    try {
-      await updateOrderStatus(order.id, newStatus);
-      onRefresh();
-    } catch (error) {
-      console.error("Failed to update order status:", error);
-    }
-  };
 
   const cellValue = order[columnKey as keyof Order];
 
@@ -51,7 +42,7 @@ export const RenderCell: React.FC<RenderCellProps> = ({
     case "name":
       return (
         <div className="flex flex-col">
-          <p className="text-bold text-small capitalize">{order.name}</p>
+          <p className="text-bold text-small capitalize">{order.userName || order.name}</p>
           {order.phone && (
             <p className="text-bold text-tiny capitalize text-default-400">
               {order.phone}
@@ -74,12 +65,18 @@ export const RenderCell: React.FC<RenderCellProps> = ({
       return (
         <div className="flex flex-col">
           <p className="text-bold text-small">
-            $
-            {order.totalAmount?.toFixed(2) || order.total?.toFixed(2) || "0.00"}
+            ${order.totalAmount?.toFixed(2) || order.total?.toFixed(2) || "0.00"}
           </p>
-          <p className="text-bold text-tiny text-default-400 uppercase">
-            {order.currency || "USD"}
-          </p>
+          {order.discount && order.discount > 0 && (
+            <p className="text-bold text-tiny text-red-600">
+              -${order.discount.toFixed(2)} discount
+            </p>
+          )}
+          {order.couponCode && (
+            <p className="text-bold text-tiny text-orange-600 font-mono">
+              {order.couponCode}
+            </p>
+          )}
         </div>
       );
 
@@ -90,61 +87,23 @@ export const RenderCell: React.FC<RenderCellProps> = ({
       > = {
         delivered: "success",
         shipped: "primary",
-        pending: "warning",
+        confirmed: "warning",
         cancelled: "danger",
       };
 
       return (
-        <div className="flex flex-col gap-1">
-          <Chip
-            className="capitalize"
-            color={statusColorMap[order.status]}
-            size="sm"
-            variant="flat"
-          >
-            {order.status}
-          </Chip>
-          <div className="flex gap-1">
-            {order.status !== "delivered" && order.status !== "cancelled" && (
-              <>
-                {order.status !== "shipped" && (
-                  <Button
-                    size="sm"
-                    color="primary"
-                    variant="flat"
-                    className="min-w-unit-16 h-6 text-xs"
-                    onPress={() => handleStatusChange("shipped")}
-                  >
-                    Ship
-                  </Button>
-                )}
-                {order.status === "shipped" && (
-                  <Button
-                    size="sm"
-                    color="success"
-                    variant="flat"
-                    className="min-w-unit-16 h-6 text-xs"
-                    onPress={() => handleStatusChange("delivered")}
-                  >
-                    Deliver
-                  </Button>
-                )}
-                <Button
-                  size="sm"
-                  color="danger"
-                  variant="flat"
-                  className="min-w-unit-16 h-6 text-xs"
-                  onPress={() => handleStatusChange("cancelled")}
-                >
-                  Cancel
-                </Button>
-              </>
-            )}
-          </div>
-        </div>
+        <Chip
+          className="capitalize"
+          color={statusColorMap[order.status]}
+          size="sm"
+          variant="flat"
+        >
+          {order.status}
+        </Chip>
       );
 
     case "createdAt":
+      if (!order.createdAt) return <span className="text-default-400">N/A</span>;
       return (
         <div className="flex flex-col">
           <p className="text-bold text-small">
@@ -159,16 +118,40 @@ export const RenderCell: React.FC<RenderCellProps> = ({
     case "actions":
       return (
         <div className="relative flex items-center gap-2">
-          <Tooltip content="View details">
-            <Button
-              isIconOnly
-              size="sm"
-              variant="light"
-              onPress={() => onView(order)}
-            >
-              <EyeIcon fill="currentColor" />
-            </Button>
-          </Tooltip>
+          <Button
+            size="sm"
+            variant="light"
+            onPress={() => onView(order)}
+            className="text-blue-600 hover:text-blue-800"
+            startContent={
+              <EyeIcon 
+                fill="currentColor" 
+                size={16} 
+                width={16} 
+                height={16}
+                className="w-4 h-4"
+              />
+            }
+          >
+            View
+          </Button>
+          <Button
+            size="sm"
+            variant="light"
+            onPress={() => onEdit(order)}
+            className="text-[#05CB14] hover:text-[#E55A00]"
+            startContent={
+              <EditIcon 
+                fill="currentColor" 
+                size={16} 
+                width={16} 
+                height={16}
+                className="w-4 h-4"
+              />
+            }
+          >
+            Edit
+          </Button>
         </div>
       );
 

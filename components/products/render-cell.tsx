@@ -133,7 +133,7 @@ export const RenderCell: React.FC<RenderCellProps> = ({
             size="sm"
             variant="light"
             onPress={() => onEdit(product)}
-            className="text-[#FF7101] hover:text-[#E55A00]"
+            className="text-[#05CB14] hover:text-[#E55A00]"
           >
             <EditIcon className="w-4 h-4" />
           </Button>

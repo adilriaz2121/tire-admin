@@ -61,13 +61,25 @@ export interface IProduct {
 
 export interface IReview {
   id: string;
+  Dry: number;
+  Wet: number;
+  Winter: number;
+  size: string;
+  brand: string;
+  Comfort: number;
+  Noise: number;
+  Treadwear: number;
+  summary?: string | null;
+  additionalComments?: string | null;
   name: string;
-  country: string;
-  review: string;
-  rating: number;
-  productsId: string;
+  email: string;
+  purchaseDate: string;
+  vehicle: string;
+  milesDriven: string;
+  drivingStyle: string;
+  wouldBuyAgain: string;
   createdAt: string;
-  updatedAt?: string;
+  updatedAt: string;
 }
 
 export interface IColumn {

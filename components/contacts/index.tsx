@@ -133,7 +133,7 @@ export const ContactsPage: React.FC<ContactsProps> = ({
   };
 
   const unreadCount = contacts.filter(
-    (contact) => contact.isRead === "false"
+    (contact) => !contact.isRead
   ).length;
 
   return (

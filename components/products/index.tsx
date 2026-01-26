@@ -112,7 +112,7 @@ export const Products: React.FC<ProductsProps> = ({ data, meta }) => {
           </button>
           <button
             onClick={handleAdd}
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FF7101] to-[#E55A00] text-white px-6 py-3 rounded-xl font-semibold hover:opacity-90 transition-all duration-200 shadow-lg hover:shadow-xl"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#05CB14] to-[#E55A00] text-white px-6 py-3 rounded-xl font-semibold hover:opacity-90 transition-all duration-200 shadow-lg hover:shadow-xl"
           >
             <svg
               className="w-5 h-5"

@@ -30,7 +30,7 @@ body {
 
 /* Thumb of the scrollbar */
 ::-webkit-scrollbar-thumb {
-  background-color: #FF7101;
+  background-color: #05CB14;
   /* Scrollbar color */
   border-radius: 50%;
   /* Rounded track corners */

@@ -204,7 +204,7 @@ export const ViewProductModal: React.FC<ViewProductModalProps> = ({
                   <label className="text-sm font-medium text-gray-500">
                     Quantity
                   </label>
-                  <p className="text-2xl font-bold text-[#FF7101]">
+                  <p className="text-2xl font-bold text-[#05CB14]">
                     {product.quantity}
                   </p>
                 </div>

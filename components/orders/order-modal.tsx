@@ -10,14 +10,14 @@ import {
   Button,
   Chip,
   Divider,
-  Select,
-  SelectItem,
 } from "@nextui-org/react";
 import { Order, updateOrderStatus } from "@/actions/order.action";
+import { toast } from "sonner";
 
 interface OrderModalProps {
   order: Order;
   isOpen: boolean;
+  isEditMode?: boolean;
   onClose: () => void;
   onRefresh: () => void;
 }
@@ -25,29 +25,30 @@ interface OrderModalProps {
 export const OrderModal: React.FC<OrderModalProps> = ({
   order,
   isOpen,
+  isEditMode = false,
   onClose,
   onRefresh,
 }) => {
   const [loading, setLoading] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState(order.status);
 
-  const statusOptions = [
-    { key: "pending", label: "Pending", color: "warning" },
-    { key: "shipped", label: "Shipped", color: "primary" },
-    { key: "delivered", label: "Delivered", color: "success" },
-    { key: "cancelled", label: "Cancelled", color: "danger" },
-  ];
-
-  const handleStatusUpdate = async () => {
-    if (selectedStatus === order.status) return;
+  const handleStatusUpdate = async (newStatus: "shipped" | "cancelled") => {
+    if (newStatus === order.status) return;
 
     setLoading(true);
     try {
-      await updateOrderStatus(order.id, selectedStatus as any);
-      onRefresh();
-      onClose();
+      const result = await updateOrderStatus(order.id, newStatus);
+      if (result.error) {
+        toast.error(result.error);
+      } else {
+        toast.success(
+          `Order status updated to ${newStatus}. An email notification has been sent to the customer.`
+        );
+        onRefresh();
+        onClose();
+      }
     } catch (error) {
       console.error("Failed to update order status:", error);
+      toast.error("Failed to update order status");
     } finally {
       setLoading(false);
     }
@@ -59,7 +60,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
   > = {
     delivered: "success",
     shipped: "primary",
-    pending: "warning",
+    confirmed: "warning",
     cancelled: "danger",
   };
 
@@ -84,126 +85,76 @@ export const OrderModal: React.FC<OrderModalProps> = ({
             </ModalHeader>
             <ModalBody>
               <div className="flex flex-col gap-6">
-                {/* Customer Information */}
-                <div>
-                  <h4 className="text-lg font-semibold mb-3">
-                    Customer Information
-                  </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-sm font-semibold text-gray-600">
-                        Name
-                      </label>
-                      <p className="text-base">{order.name}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-semibold text-gray-600">
-                        Email
-                      </label>
-                      <p className="text-base">{order.email}</p>
-                    </div>
-                    {order.phone && (
-                      <div>
-                        <label className="text-sm font-semibold text-gray-600">
-                          Phone
-                        </label>
-                        <p className="text-base">{order.phone}</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <Divider />
-
-                {/* Shipping Information */}
-                <div>
-                  <h4 className="text-lg font-semibold mb-3">
-                    Shipping Address
-                  </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="md:col-span-2">
-                      <label className="text-sm font-semibold text-gray-600">
-                        Address
-                      </label>
-                      <p className="text-base">{order.address}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-semibold text-gray-600">
-                        City
-                      </label>
-                      <p className="text-base">{order.city}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-semibold text-gray-600">
-                        State
-                      </label>
-                      <p className="text-base">{order.state}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-semibold text-gray-600">
-                        ZIP Code
-                      </label>
-                      <p className="text-base">{order.zip}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-semibold text-gray-600">
-                        Country
-                      </label>
-                      <p className="text-base">{order.country}</p>
-                    </div>
-                  </div>
-                </div>
-
-                <Divider />
-
-                {/* Order Information */}
-                <div>
-                  <h4 className="text-lg font-semibold mb-3">
-                    Order Information
-                  </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-sm font-semibold text-gray-600">
-                        Total Amount
-                      </label>
-                      <p className="text-xl font-bold text-green-600">
-                        ${(order.totalAmount || order.total || 0).toFixed(2)}{" "}
-                        {order.currency || "USD"}
-                      </p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-semibold text-gray-600">
-                        Payment Intent ID
-                      </label>
-                      <p className="text-base font-mono">
-                        {order.paymentIntentId}
-                      </p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-semibold text-gray-600">
-                        Order Date
-                      </label>
-                      <p className="text-base">
-                        {new Date(order.createdAt).toLocaleString()}
-                      </p>
-                    </div>
-                    {order.updatedAt !== order.createdAt && (
-                      <div>
-                        <label className="text-sm font-semibold text-gray-600">
-                          Last Updated
-                        </label>
-                        <p className="text-base">
-                          {new Date(order.updatedAt).toLocaleString()}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Product Information */}
-                {(order.productInfo || order.productIds) && (
+                {/* Product Information - Show at top */}
+                {order.orderItems && order.orderItems.length > 0 && (
                   <>
+                    <div>
+                      <h4 className="text-lg font-semibold mb-3">Product Information</h4>
+                      <div className="space-y-3">
+                        {order.orderItems.map((item, index) => (
+                          <div
+                            key={item.id || index}
+                            className="bg-gray-50 p-4 rounded-lg border border-gray-200"
+                          >
+                            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                              {/* Product Image */}
+                              {item.productImage && (
+                                <div className="flex items-start justify-center">
+                                  <img
+                                    src={item.productImage}
+                                    alt={item.productName || 'Product'}
+                                    className="w-24 h-24 object-cover rounded-lg border border-gray-300"
+                                    onError={(e) => {
+                                      const target = e.target as HTMLImageElement;
+                                      target.src = '/placeholder-image.png';
+                                    }}
+                                  />
+                                </div>
+                              )}
+                              <div className={item.productImage ? "md:col-span-2" : "md:col-span-2"}>
+                                <label className="text-sm font-semibold text-gray-600">
+                                  Product Name
+                                </label>
+                                <p className="text-base font-medium">{item.productName || 'Product'}</p>
+                                {item.productBrand && (
+                                  <p className="text-sm text-gray-600">Brand: {item.productBrand}</p>
+                                )}
+                                {item.productSize && (
+                                  <p className="text-sm text-gray-600">Size: {item.productSize}</p>
+                                )}
+                                {item.productModel && (
+                                  <p className="text-sm text-gray-600">Model: {item.productModel}</p>
+                                )}
+                              </div>
+                              <div>
+                                <label className="text-sm font-semibold text-gray-600">
+                                  Quantity
+                                </label>
+                                <p className="text-base">{item.productQuantity || 1}</p>
+                              </div>
+                              <div>
+                                <label className="text-sm font-semibold text-gray-600">
+                                  Price
+                                </label>
+                                <p className="text-base font-semibold text-green-600">
+                                  ${Number(item.productPrice || 0).toFixed(2)}
+                                </p>
+                                <p className="text-sm text-gray-600">
+                                  Total: ${Number(item.productTotal || 0).toFixed(2)}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                     <Divider />
+                  </>
+                )}
+
+                {/* Legacy Product Info Support */}
+                {(order.productInfo || order.productIds) && (!order.orderItems || order.orderItems.length === 0) && (
+                  <>
                     <div>
                       <h4 className="text-lg font-semibold mb-3">Products</h4>
                       {order.productInfo && Array.isArray(order.productInfo) ? (
@@ -274,16 +225,6 @@ export const OrderModal: React.FC<OrderModalProps> = ({
                                       </p>
                                     </div>
                                   )}
-                                  {product.category && (
-                                    <div>
-                                      <label className="text-sm font-semibold text-gray-600">
-                                        Category
-                                      </label>
-                                      <p className="text-base">
-                                        {product.category}
-                                      </p>
-                                    </div>
-                                  )}
                                 </div>
                               </div>
                             )
@@ -301,7 +242,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
                             Product IDs
                           </label>
                           <div className="flex flex-wrap gap-2 mt-2">
-                            {order.productIds.map((id, index) => (
+                            {order.productIds?.map((id, index) => (
                               <Chip key={index} size="sm" variant="flat">
                                 {id}
                               </Chip>
@@ -310,100 +251,220 @@ export const OrderModal: React.FC<OrderModalProps> = ({
                         </div>
                       )}
                     </div>
+                    <Divider />
                   </>
                 )}
 
-                {/* Additional Information */}
-                {/* {(order.userInfo ||
-                  order.shippingInfo ||
-                  order.pricingInfo) && (
-                  <>
-                    <Divider />
+                {/* Customer Information */}
+                <div>
+                  <h4 className="text-lg font-semibold mb-3">
+                    Customer Information
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <h4 className="text-lg font-semibold mb-3">
-                        Additional Information
-                      </h4>
-                      <div className="grid grid-cols-1 gap-4">
-                        {order.userInfo && (
-                          <div>
-                            <label className="text-sm font-semibold text-gray-600">
-                              User Info
-                            </label>
-                            <div className="bg-gray-50 p-3 rounded-lg mt-1">
-                              <pre className="text-sm whitespace-pre-wrap">
-                                {JSON.stringify(order.userInfo, null, 2)}
-                              </pre>
-                            </div>
-                          </div>
-                        )}
-                        {order.shippingInfo && (
-                          <div>
-                            <label className="text-sm font-semibold text-gray-600">
-                              Shipping Info
-                            </label>
-                            <div className="bg-gray-50 p-3 rounded-lg mt-1">
-                              <pre className="text-sm whitespace-pre-wrap">
-                                {JSON.stringify(order.shippingInfo, null, 2)}
-                              </pre>
-                            </div>
-                          </div>
-                        )}
-                        {order.pricingInfo && (
-                          <div>
-                            <label className="text-sm font-semibold text-gray-600">
-                              Pricing Info
-                            </label>
-                            <div className="bg-gray-50 p-3 rounded-lg mt-1">
-                              <pre className="text-sm whitespace-pre-wrap">
-                                {JSON.stringify(order.pricingInfo, null, 2)}
-                              </pre>
-                            </div>
-                          </div>
-                        )}
-                      </div>
+                      <label className="text-sm font-semibold text-gray-600">
+                        Name
+                      </label>
+                      <p className="text-base">{order.userName || order.name}</p>
                     </div>
-                  </>
-                )} */}
+                    <div>
+                      <label className="text-sm font-semibold text-gray-600">
+                        Email
+                      </label>
+                      <p className="text-base">{order.email}</p>
+                    </div>
+                    {order.phone && (
+                      <div>
+                        <label className="text-sm font-semibold text-gray-600">
+                          Phone
+                        </label>
+                        <p className="text-base">{order.phone}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
 
                 <Divider />
 
-                {/* Status Update */}
+                {/* Shipping Information */}
                 <div>
-                  <h4 className="text-lg font-semibold mb-3">Update Status</h4>
-                  <Select
-                    label="Order Status"
-                    placeholder="Select status"
-                    selectedKeys={[selectedStatus]}
-                    onSelectionChange={(keys) => {
-                      const status = Array.from(keys)[0] as
-                        | "pending"
-                        | "shipped"
-                        | "delivered"
-                        | "cancelled";
-                      setSelectedStatus(status);
-                    }}
-                  >
-                    {statusOptions.map((status) => (
-                      <SelectItem key={status.key} value={status.key}>
-                        {status.label}
-                      </SelectItem>
-                    ))}
-                  </Select>
+                  <h4 className="text-lg font-semibold mb-3">
+                    Shipping Address
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="md:col-span-2">
+                      <label className="text-sm font-semibold text-gray-600">
+                        Address
+                      </label>
+                      <p className="text-base">{order.address}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-semibold text-gray-600">
+                        City
+                      </label>
+                      <p className="text-base">{order.city}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-semibold text-gray-600">
+                        State
+                      </label>
+                      <p className="text-base">{order.state}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-semibold text-gray-600">
+                        ZIP Code
+                      </label>
+                      <p className="text-base">{order.zip}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-semibold text-gray-600">
+                        Country
+                      </label>
+                      <p className="text-base">{order.country}</p>
+                    </div>
+                  </div>
                 </div>
+
+                <Divider />
+
+                {/* Order Information */}
+                <div>
+                  <h4 className="text-lg font-semibold mb-3">
+                    Order Information
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Pricing Breakdown */}
+                    {order.discount && order.discount > 0 && (
+                      <div className="md:col-span-2">
+                        <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="text-sm font-semibold text-gray-700">Subtotal:</span>
+                            <span className="text-base font-semibold">
+                              ${(order.totalAmount + order.discount).toFixed(2)}
+                            </span>
+                          </div>
+                          {order.couponCode && (
+                            <div className="flex justify-between items-center mb-2">
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm font-semibold text-gray-700">Discount:</span>
+                                <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded font-mono">
+                                  {order.couponCode}
+                                </span>
+                              </div>
+                              <span className="text-base font-semibold text-red-600">
+                                -${order.discount.toFixed(2)}
+                              </span>
+                            </div>
+                          )}
+                          {!order.couponCode && order.discount > 0 && (
+                            <div className="flex justify-between items-center mb-2">
+                              <span className="text-sm font-semibold text-gray-700">Discount:</span>
+                              <span className="text-base font-semibold text-red-600">
+                                -${order.discount.toFixed(2)}
+                              </span>
+                            </div>
+                          )}
+                          <div className="flex justify-between items-center pt-2 border-t border-gray-300">
+                            <span className="text-base font-bold text-gray-900">Total Amount:</span>
+                            <span className="text-xl font-bold text-green-600">
+                              ${order.totalAmount.toFixed(2)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {(!order.discount || order.discount === 0) && (
+                      <div>
+                        <label className="text-sm font-semibold text-gray-600">
+                          Total Amount
+                        </label>
+                        <p className="text-xl font-bold text-green-600">
+                          ${order.totalAmount.toFixed(2)}
+                        </p>
+                      </div>
+                    )}
+                    
+                    <div>
+                      <label className="text-sm font-semibold text-gray-600">
+                        Shipping Location
+                      </label>
+                      <p className="text-base capitalize">
+                        {order.shippingLocation?.replace(/([A-Z])/g, ' $1').trim() || 'N/A'}
+                      </p>
+                    </div>
+                    
+                    {order.couponCode && (!order.discount || order.discount === 0) && (
+                      <div>
+                        <label className="text-sm font-semibold text-gray-600">
+                          Coupon Code
+                        </label>
+                        <p className="text-base font-mono bg-orange-50 text-orange-800 px-3 py-1 rounded inline-block">
+                          {order.couponCode}
+                        </p>
+                      </div>
+                    )}
+                    
+                    {order.paymentIntentId && (
+                      <div>
+                        <label className="text-sm font-semibold text-gray-600">
+                          Payment Intent ID
+                        </label>
+                        <p className="text-base font-mono">
+                          {order.paymentIntentId}
+                        </p>
+                      </div>
+                    )}
+                    {order.createdAt && (
+                      <div>
+                        <label className="text-sm font-semibold text-gray-600">
+                          Order Date
+                        </label>
+                        <p className="text-base">
+                          {new Date(order.createdAt).toLocaleString()}
+                        </p>
+                      </div>
+                    )}
+                    {order.updatedAt && order.updatedAt !== order.createdAt && (
+                      <div>
+                        <label className="text-sm font-semibold text-gray-600">
+                          Last Updated
+                        </label>
+                        <p className="text-base">
+                          {new Date(order.updatedAt).toLocaleString()}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
               </div>
             </ModalBody>
             <ModalFooter>
               <Button color="danger" variant="flat" onPress={onClose}>
                 Close
               </Button>
-              {selectedStatus !== order.status && (
-                <Button
-                  color="primary"
-                  onPress={handleStatusUpdate}
-                  isLoading={loading}
-                >
-                  Update Status
-                </Button>
+              {isEditMode && order.status !== "delivered" && order.status !== "cancelled" && (
+                <>
+                  {order.status === "confirmed" && (
+                    <Button
+                      color="primary"
+                      onPress={() => handleStatusUpdate("shipped")}
+                      isLoading={loading}
+                      isDisabled={loading}
+                    >
+                      Ship Order
+                    </Button>
+                  )}
+                  <Button
+                    color="danger"
+                    onPress={() => handleStatusUpdate("cancelled")}
+                    isLoading={loading}
+                    isDisabled={loading}
+                  >
+                    Cancel Order
+                  </Button>
+                </>
               )}
             </ModalFooter>
           </>

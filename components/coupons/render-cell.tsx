@@ -1,10 +1,13 @@
 "use client";
 
 import React from "react";
+import { Button } from "@nextui-org/react";
 import { ICoupon } from "@/helpers/types";
 
 import { deleteCoupon, setCouponActive } from "@/actions/coupon.action";
 import { toast } from "sonner";
+import { EditIcon } from "../icons/table/edit-icon";
+import { DeleteIcon } from "../icons/table/delete-icon";
 
 interface RenderCellProps {
   coupon: ICoupon;
@@ -68,11 +71,10 @@ export const RenderCell = ({ coupon, columnKey, onEdit }: any) => {
       return (
         <div className="flex flex-col w-20 items-center justify-center">
           <span
-            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium cursor-pointer ${
-              coupon.isActive
+            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium cursor-pointer ${coupon.isActive
                 ? "bg-green-100 text-green-800"
                 : "bg-red-100 text-red-800"
-            }`}
+              }`}
             onClick={handleToggleActive}
           >
             {coupon.isActive ? "Active" : "Inactive"}
@@ -83,6 +85,57 @@ export const RenderCell = ({ coupon, columnKey, onEdit }: any) => {
       return (
         <div className="flex flex-col">
           <p className="text-bold text-small">{cellValue}</p>
+          {coupon.maxUse && (
+            <p className="text-tiny text-default-400">
+              / {coupon.maxUse} max
+            </p>
+          )}
+        </div>
+      );
+    case "usage":
+      return (
+        <div className="flex flex-col">
+          <p className="text-bold text-small">
+            {coupon.usedCount} {coupon.maxUse ? `/${coupon.maxUse}` : ""}
+          </p>
+          {coupon.maxUse && (
+            <p className="text-tiny text-default-400">
+              {Math.round((coupon.usedCount / coupon.maxUse) * 100)}% used
+            </p>
+          )}
+        </div>
+      );
+    case "validity":
+      const now = new Date();
+      const validFrom = coupon.validFrom ? new Date(coupon.validFrom) : null;
+      const validTo = coupon.validTo ? new Date(coupon.validTo) : null;
+
+      let status = "Active";
+      let statusColor = "text-green-600";
+
+      if (validFrom && now < validFrom) {
+        status = "Not Started";
+        statusColor = "text-gray-500";
+      } else if (validTo && now > validTo) {
+        status = "Expired";
+        statusColor = "text-red-600";
+      }
+
+      return (
+        <div className="flex flex-col">
+          {validFrom && (
+            <p className="text-tiny text-default-400">
+              From: {new Date(validFrom).toLocaleDateString()}
+            </p>
+          )}
+          {validTo ? (
+            <p className={`text-bold text-small ${statusColor}`}>
+              To: {new Date(validTo).toLocaleDateString()}
+            </p>
+          ) : (
+            <p className="text-bold text-small text-gray-500">No expiry</p>
+          )}
+          <p className={`text-tiny ${statusColor} font-medium`}>{status}</p>
         </div>
       );
     case "validTo":
@@ -98,44 +151,41 @@ export const RenderCell = ({ coupon, columnKey, onEdit }: any) => {
     case "actions":
       return (
         <div className="relative flex items-center gap-2">
-          <button
-            className="p-2 text-[#FF7101] hover:bg-orange-50 rounded-lg transition-colors"
-            onClick={() => onEdit(coupon)}
-            title="Edit Coupon"
-          >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+          <Button
+            size="sm"
+            variant="light"
+            onPress={() => onEdit(coupon)}
+            className="text-[#05CB14] hover:text-[#E55A00]"
+            startContent={
+              <EditIcon 
+                fill="currentColor" 
+                size={16} 
+                width={16} 
+                height={16}
+                className="w-4 h-4"
               />
-            </svg>
-          </button>
-          <button
-            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-            onClick={handleDelete}
-            title="Delete Coupon"
+            }
           >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+            Edit
+          </Button>
+          <Button
+            size="sm"
+            variant="light"
+            color="danger"
+            onPress={handleDelete}
+            className="text-red-600 hover:text-red-800"
+            startContent={
+              <DeleteIcon 
+                fill="currentColor" 
+                size={16} 
+                width={16} 
+                height={16}
+                className="w-4 h-4"
               />
-            </svg>
-          </button>
+            }
+          >
+            Delete
+          </Button>
         </div>
       );
     default:

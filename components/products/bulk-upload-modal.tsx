@@ -111,8 +111,7 @@ export const BulkUploadModal: React.FC<BulkUploadModalProps> = ({
       } else {
         setUploadResults(result.data!);
         toast.success(
-          `Bulk upload completed! ${result.data!.success} products created, ${
-            result.data!.failed
+          `Bulk upload completed! ${result.data!.success} products created, ${result.data!.failed
           } failed.`
         );
 
@@ -193,11 +192,10 @@ Bridgestone,Potenza RE-71R,2023,Summer,245/40R18,Bridgestone,67890,Track focused
 
             {/* File Upload Area */}
             <div
-              className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-                selectedFile
+              className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${selectedFile
                   ? "border-green-500 bg-green-50"
                   : "border-gray-300 hover:border-gray-400"
-              }`}
+                }`}
               onDrop={handleDrop}
               onDragOver={handleDragOver}
             >
@@ -239,7 +237,7 @@ Bridgestone,Potenza RE-71R,2023,Summer,245/40R18,Bridgestone,67890,Track focused
                   <p className="text-gray-600">
                     Drag and drop your file here, or{" "}
                     <button
-                      className="text-[#FF7101] hover:text-[#E55A00] underline"
+                      className="text-[#05CB14] hover:text-[#E55A00] underline"
                       onClick={() => fileInputRef.current?.click()}
                       disabled={isUploading}
                     >

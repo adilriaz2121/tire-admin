@@ -29,15 +29,9 @@ import { ReviewModal } from "./review-modal";
 import { ViewReviewModal } from "./view-review-modal";
 import { RenderCell } from "./render-cell";
 
-interface Review {
-  id: string;
-  name: string;
-  country: string;
-  review: string;
-  rating: number;
-  createdAt: string;
-  productsId?: string;
-}
+import { IReview } from "@/helpers/types";
+
+type Review = IReview;
 
 interface ReviewsProps {
   data: Review[];
@@ -52,9 +46,10 @@ interface ReviewsProps {
 const columns = [
   { name: "ID", uid: "id" },
   { name: "NAME", uid: "name" },
-  { name: "COUNTRY", uid: "country" },
-  { name: "RATING", uid: "rating" },
-  { name: "REVIEW", uid: "review" },
+  { name: "EMAIL", uid: "email" },
+  { name: "BRAND/SIZE", uid: "brandSize" },
+  { name: "RATINGS", uid: "ratings" },
+  { name: "VEHICLE", uid: "vehicle" },
   { name: "DATE", uid: "createdAt" },
   { name: "ACTIONS", uid: "actions" },
 ];
@@ -123,35 +118,6 @@ export function Reviews({ data, meta }: ReviewsProps) {
             updateSearchParams({ query: e.target.value, page: "1" })
           }
         />
-        <Select
-          placeholder="Filter by rating"
-          className="max-w-xs"
-          onChange={(e) =>
-            updateSearchParams({
-              rating: e.target.value || undefined,
-              page: "1",
-            })
-          }
-        >
-          <SelectItem key="" value="">
-            All Ratings
-          </SelectItem>
-          <SelectItem key="5" value="5">
-            5 Stars
-          </SelectItem>
-          <SelectItem key="4" value="4">
-            4 Stars
-          </SelectItem>
-          <SelectItem key="3" value="3">
-            3 Stars
-          </SelectItem>
-          <SelectItem key="2" value="2">
-            2 Stars
-          </SelectItem>
-          <SelectItem key="1" value="1">
-            1 Star
-          </SelectItem>
-        </Select>
       </div>
 
       {/* Table */}

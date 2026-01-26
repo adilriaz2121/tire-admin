@@ -56,7 +56,7 @@ export const RenderCell = ({ article, columnKey, onEdit }: any) => {
       return (
         <div className="relative flex items-center gap-1">
           <button
-            className="p-2 text-[#FF7101] hover:bg-orange-50 rounded-lg transition-all duration-200 hover:scale-105"
+            className="p-2 text-[#05CB14] hover:bg-orange-50 rounded-lg transition-all duration-200 hover:scale-105"
             onClick={() => onEdit(article)}
             title="Edit Article"
           >

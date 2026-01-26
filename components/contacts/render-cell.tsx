@@ -80,11 +80,11 @@ export const RenderCell: React.FC<RenderCellProps> = ({
       return (
         <Chip
           className="capitalize"
-          color={contact.isRead === "true" ? "success" : "warning"}
+          color={contact.isRead ? "success" : "warning"}
           size="sm"
           variant="flat"
         >
-          {contact.isRead === "true" ? "Read" : "Unread"}
+          {contact.isRead ? "Read" : "Unread"}
         </Chip>
       );
 
@@ -103,42 +103,69 @@ export const RenderCell: React.FC<RenderCellProps> = ({
     case "actions":
       return (
         <div className="relative flex items-center gap-2">
-          <Tooltip content="View details">
+          <Button
+            size="sm"
+            variant="light"
+            onPress={() => onView(contact)}
+            className="text-blue-600 hover:text-blue-800"
+            startContent={
+              <EyeIcon 
+                fill="currentColor" 
+                size={16} 
+                width={16} 
+                height={16}
+                className="w-4 h-4"
+              />
+            }
+          >
+            View
+          </Button>
+
+          {!contact.isRead && (
             <Button
-              isIconOnly
               size="sm"
               variant="light"
-              onPress={() => onView(contact)}
+              color="success"
+              onPress={handleMarkAsRead}
+              className="text-green-600 hover:text-green-800"
+              startContent={
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              }
             >
-              <EyeIcon />
+              Mark Read
             </Button>
-          </Tooltip>
-
-          {contact.isRead === "false" && (
-            <Tooltip content="Mark as read">
-              <Button
-                isIconOnly
-                size="sm"
-                variant="light"
-                color="success"
-                onPress={handleMarkAsRead}
-              >
-                ✓
-              </Button>
-            </Tooltip>
           )}
 
-          <Tooltip color="danger" content="Delete contact">
-            <Button
-              isIconOnly
-              size="sm"
-              variant="light"
-              color="danger"
-              onPress={handleDelete}
-            >
-              <DeleteIcon />
-            </Button>
-          </Tooltip>
+          <Button
+            size="sm"
+            variant="light"
+            color="danger"
+            onPress={handleDelete}
+            className="text-red-600 hover:text-red-800"
+            startContent={
+              <DeleteIcon 
+                fill="currentColor" 
+                size={16} 
+                width={16} 
+                height={16}
+                className="w-4 h-4"
+              />
+            }
+          >
+            Delete
+          </Button>
         </div>
       );
 
