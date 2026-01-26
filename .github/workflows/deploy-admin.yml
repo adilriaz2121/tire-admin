@@ -1,86 +1,100 @@
-name: Deploy Admin Panel
+name: Deploy to Ubuntu
 
 on:
   push:
     branches:
-      - main # or 'master' depending on your repo
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Code
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Ensure /var/www permissions on server
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USERNAME }}
-          key: ${{ secrets.SERVER_PRIVATE_KEY }}
-          script: |
-            echo "🔧 Ensuring /var/www permissions..."
-            sudo mkdir -p /var/www/tire-admin
-            sudo chown -R $USER:$USER /var/www
-            sudo chmod -R 755 /var/www
+      - name: Clean runner space
+        run: |
+          df -h
+          sudo apt-get clean
+          sudo rm -rf /tmp/* /var/tmp/*
 
-      - name: Sync Admin Files via Rsync
-        uses: burnett01/rsync-deployments@6.0.0
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          switches: -avzr --delete --exclude '.git' --exclude 'node_modules'
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Create .env file
+        run: |
+          echo "${{ secrets.SERVER_ENV }}" > .env
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build project
+        run: |
+          export NODE_OPTIONS="--max-old-space-size=4096"
+          npm run build
+
+      # Upload everything needed for production
+      - name: rsync deployments
+        uses: burnett01/rsync-deployments@6.0.0
+        timeout-minutes: 10
+        with:
+          switches: -avzr --delete --exclude 'node_modules' --exclude '.git*' --exclude 'README.md' --exclude '.next/cache' -e "ssh -o StrictHostKeyChecking=no -o ConnectTimeout=30"
           path: .
-          remote_path: /var/www/tire-admin
+          remote_path: /home/ubuntu/tire-admin
           remote_host: ${{ secrets.SERVER_HOST }}
           remote_user: ${{ secrets.SERVER_USERNAME }}
           remote_key: ${{ secrets.SERVER_PRIVATE_KEY }}
+          remote_port: ${{ secrets.SERVER_PORT || 22 }}
 
-      - name: Deploy on Server
+      - name: Deploy to server
         uses: appleboy/ssh-action@v1.0.3
+        timeout-minutes: 15
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_PRIVATE_KEY }}
+          port: ${{ secrets.SERVER_PORT || 22 }}
+          timeout: 30s
+          command_timeout: 10m
           script: |
-            echo "🚀 Deploying Admin Panel..."
-            cd /var/www/tire-admin
+            # Use system-wide Node instead of NVM
+            # Install Node.js if not installed
+            if ! command -v node >/dev/null 2>&1; then
+              curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+              sudo apt-get install -y nodejs
+            fi
 
+            cd /home/ubuntu/tire-admin
+
+            # Install dependencies
             echo "📦 Installing dependencies..."
-            npm install
+            export NODE_OPTIONS="--max-old-space-size=2048"
+            npm install --production
 
-            echo "🏗️ Building project..."
-            npm run build || echo "No build step"
-
-            echo "🔁 Restarting with PM2..."
-            sudo npm install -g pm2 serve
+            # Stop existing PM2 process
+            pm2 stop tire-admin || true
             pm2 delete tire-admin || true
-            pm2 start "serve -s build -l 3001" --name tire-admin
+
+            # Verify Next.js is installed
+            if [ -f "node_modules/.bin/next" ]; then
+              echo "✅ Next.js found!"
+            else
+              echo "❌ Next.js not found! This will cause issues."
+              exit 1
+            fi
+
+            # Start app with PM2
+            echo "🚀 Starting application..."
+            pm2 start npm --name "tire-admin" -- start
+
+            # Save PM2 configuration
             pm2 save
 
-            echo "🔧 Configuring Nginx..."
-            echo '
-            server {
-                listen 80;
-                server_name admin.cinefloat.site;
+            # Setup PM2 startup (make PM2 run on reboot)
+            sudo env PATH=$PATH:/usr/bin pm2 startup systemd -u ubuntu --hp /home/ubuntu || true
 
-                location / {
-                    proxy_pass http://localhost:3001;
-                    proxy_http_version 1.1;
-                    proxy_set_header Upgrade $http_upgrade;
-                    proxy_set_header Connection "upgrade";
-                    proxy_set_header Host $host;
-                    proxy_cache_bypass $http_upgrade;
-                }
-            }
-
-
-            ' | sudo tee /etc/nginx/sites-available/tire-admin
-
-            sudo ln -sf /etc/nginx/sites-available/tire-admin /etc/nginx/sites-enabled/
-            sudo nginx -t
-            sudo systemctl restart nginx
-
-            echo "🔒 Enabling SSL..."
-            sudo certbot --nginx -d admin.cinefloat.site --non-interactive --agree-tos -m admin@cinefloat.site || true
-
-            echo "✅ Admin deployment complete!"
+            echo "✅ Deployment completed successfully!"
+            pm2 list
