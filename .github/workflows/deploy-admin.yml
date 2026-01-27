@@ -35,17 +35,12 @@ jobs:
           export NODE_OPTIONS="--max-old-space-size=4096"
           npm run build
 
-      # 6️⃣ Rsync upload (include standalone node_modules)
+      # 6️⃣ Rsync upload to server (standalone node_modules included)
       - name: Upload build to server
         uses: burnett01/rsync-deployments@6.0.0
         timeout-minutes: 15
         with:
-          switches: -avzr --delete \
-                    --exclude='.git*' \
-                    --exclude='README.md' \
-                    --exclude='node_modules' \
-                    --exclude='.next/cache' \
-                    --include='.next/standalone/node_modules/**'
+          switches: "-avzr --delete --exclude='.git*' --exclude='README.md' --exclude='node_modules' --exclude='.next/cache' --include='.next/standalone/node_modules/**'"
           path: .
           remote_path: /home/ubuntu/tire-admin
           remote_host: ${{ secrets.SERVER_HOST }}
