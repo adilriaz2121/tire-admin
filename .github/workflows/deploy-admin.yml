@@ -8,40 +8,45 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
+      # 1️⃣ Checkout code
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Clean runner space
-        run: |
-          df -h
-          sudo apt-get clean
-          sudo rm -rf /tmp/* /var/tmp/*
-
+      # 2️⃣ Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
+      # 3️⃣ Create .env file
       - name: Create .env file
         run: |
           echo "${{ secrets.SERVER_ENV }}" > .env
 
+      # 4️⃣ Install dependencies (FULL install for build)
       - name: Install dependencies
         run: npm install
 
+      # 5️⃣ Build Next.js app
       - name: Build project
         run: |
           export NODE_OPTIONS="--max-old-space-size=4096"
           npm run build
 
-      # Upload everything needed for production
-      - name: rsync deployments
+      # 6️⃣ Rsync build artifacts to server
+      - name: Upload build to server
         uses: burnett01/rsync-deployments@6.0.0
         timeout-minutes: 10
         with:
-          switches: -avzr --delete --exclude 'node_modules' --exclude '.git*' --exclude 'README.md' --exclude '.next/cache' -e "ssh -o StrictHostKeyChecking=no -o ConnectTimeout=30"
+          switches: >
+            -avzr --delete
+            --exclude '.git*'
+            --exclude 'README.md'
+            --exclude 'node_modules'
+            --exclude '.next/cache'
           path: .
           remote_path: /home/ubuntu/tire-admin
           remote_host: ${{ secrets.SERVER_HOST }}
@@ -49,19 +54,17 @@ jobs:
           remote_key: ${{ secrets.SERVER_PRIVATE_KEY }}
           remote_port: ${{ secrets.SERVER_PORT || 22 }}
 
-      - name: Deploy to server
+      # 7️⃣ Restart app on server (NO npm install here)
+      - name: Restart PM2 on server
         uses: appleboy/ssh-action@v1.0.3
-        timeout-minutes: 15
+        timeout-minutes: 10
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_PORT || 22 }}
-          timeout: 30s
-          command_timeout: 10m
           script: |
-            # Use system-wide Node instead of NVM
-            # Install Node.js if not installed
+            # Ensure Node.js exists
             if ! command -v node >/dev/null 2>&1; then
               curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
               sudo apt-get install -y nodejs
@@ -69,32 +72,14 @@ jobs:
 
             cd /home/ubuntu/tire-admin
 
-            # Install dependencies
-            echo "📦 Installing dependencies..."
-            export NODE_OPTIONS="--max-old-space-size=2048"
-            npm install --production
+            echo "🚀 Restarting tire-admin..."
 
-            # Stop existing PM2 process
             pm2 stop tire-admin || true
             pm2 delete tire-admin || true
 
-            # Verify Next.js is installed
-            if [ -f "node_modules/.bin/next" ]; then
-              echo "✅ Next.js found!"
-            else
-              echo "❌ Next.js not found! This will cause issues."
-              exit 1
-            fi
-
-            # Start app with PM2
-            echo "🚀 Starting application..."
             pm2 start npm --name "tire-admin" -- start
-
-            # Save PM2 configuration
             pm2 save
 
-            # Setup PM2 startup (make PM2 run on reboot)
             sudo env PATH=$PATH:/usr/bin pm2 startup systemd -u ubuntu --hp /home/ubuntu || true
 
-            echo "✅ Deployment completed successfully!"
             pm2 list
