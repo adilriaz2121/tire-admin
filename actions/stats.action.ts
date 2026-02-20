@@ -75,9 +75,25 @@ export const getOrdersChartData = async (): Promise<{ success: boolean; data: Or
   }
 };
 
-export const getDashboardData = async (): Promise<{ success: boolean; data: DashboardData }> => {
+export interface DashboardFilters {
+  period?: "day" | "week" | "month" | "year";
+  year?: number;
+  month?: number;
+}
+
+export const getDashboardData = async (
+  filters?: DashboardFilters
+): Promise<{ success: boolean; data: DashboardData }> => {
   try {
-    const response = await axiosInstance.get("/api/stats/dashboard");
+    const params = new URLSearchParams();
+    if (filters?.period) params.append("period", filters.period);
+    if (filters?.year) params.append("year", String(filters.year));
+    if (filters?.month) params.append("month", String(filters.month));
+
+    const query = params.toString();
+    const response = await axiosInstance.get(
+      `/api/stats/dashboard${query ? `?${query}` : ""}`
+    );
     return response.data;
   } catch (error) {
     console.error("Error fetching dashboard data:", error);

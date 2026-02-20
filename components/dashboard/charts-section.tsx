@@ -12,63 +12,68 @@ import {
   ResponsiveContainer,
   BarChart,
   Bar,
-  PieChart,
-  Pie,
-  Cell,
-  Legend,
 } from "recharts";
-import { OrdersChartData } from "@/actions/stats.action";
+import { OrdersChartData, DashboardFilters } from "@/actions/stats.action";
 
 interface ChartsSectionProps {
   charts: {
     orders: OrdersChartData;
   };
+  period?: DashboardFilters["period"];
 }
 
-const ChartsSection: React.FC<ChartsSectionProps> = ({ charts }) => {
-  // Transform monthly data for charts
-  const monthNames = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
+const monthNames = [
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+];
 
-  const ordersMonthlyData = charts.orders.monthlyData.map((item) => ({
-    month: monthNames[item.month - 1],
-    orders: item.count,
-    revenue: item.revenue,
-  }));
+const ChartsSection: React.FC<ChartsSectionProps> = ({ charts, period = "month" }) => {
+  // Transform data for charts with proper labels based on period
+  const chartData = charts.orders.monthlyData.map((item) => {
+    let label: string;
+    switch (period) {
+      case "day":
+        label = `Day ${item.month}`;
+        break;
+      case "week":
+        label = `W${item.month}`;
+        break;
+      case "year":
+        label = String(item.month);
+        break;
+      default:
+        label = monthNames[item.month - 1] || String(item.month);
+    }
+    return {
+      label,
+      orders: item.count,
+      revenue: item.revenue,
+    };
+  });
 
-  // Status breakdown pie chart data
-  const statusColors = {
-    pending: "#f59e0b",
-    shipped: "#05CB14",
-    delivered: "#10b981",
-    cancelled: "#ef4444",
+  const periodTitles: Record<string, string> = {
+    day: "Daily Orders",
+    week: "Weekly Orders",
+    month: "Monthly Orders",
+    year: "Yearly Orders",
   };
 
-  const statusPieData = charts.orders.statusBreakdown.map((item) => ({
-    name: item.status.charAt(0).toUpperCase() + item.status.slice(1),
-    value: item.count,
-    color: statusColors[item.status as keyof typeof statusColors] || "#6b7280",
-  }));
+  const revenueTitles: Record<string, string> = {
+    day: "Daily Revenue",
+    week: "Weekly Revenue",
+    month: "Monthly Revenue",
+    year: "Yearly Revenue",
+  };
 
   return (
     <div className="grid grid-cols-1 gap-6">
       {/* Orders Chart */}
-      <Card>
+      <Card className="shadow-none border border-gray-200">
         <CardHeader className="pb-2">
           <div>
-            <h3 className="text-lg font-semibold">Orders This Year</h3>
+            <h3 className="text-lg font-semibold">
+              {periodTitles[period || "month"]}
+            </h3>
             <p className="text-sm text-gray-600">
               Total: {charts.orders.summary.total} | Revenue: $
               {charts.orders.summary.revenue.toFixed(2)} | Avg: $
@@ -81,11 +86,11 @@ const ChartsSection: React.FC<ChartsSectionProps> = ({ charts }) => {
           {/* @ts-ignore */}
           <ResponsiveContainer width="100%" height={300}>
             {/* @ts-ignore */}
-            <BarChart data={ordersMonthlyData} width={500} height={300}>
+            <BarChart data={chartData} width={500} height={300}>
               {/* @ts-ignore */}
               <CartesianGrid strokeDasharray="3 3" />
               {/* @ts-ignore */}
-              <XAxis dataKey="month" />
+              <XAxis dataKey="label" />
               {/* @ts-ignore */}
               <YAxis />
               {/* @ts-ignore */}
@@ -98,20 +103,22 @@ const ChartsSection: React.FC<ChartsSectionProps> = ({ charts }) => {
       </Card>
 
       {/* Revenue Chart */}
-      <Card>
+      <Card className="shadow-none border border-gray-200">
         <CardHeader className="pb-2">
-          <h3 className="text-lg font-semibold">Monthly Revenue</h3>
+          <h3 className="text-lg font-semibold">
+            {revenueTitles[period || "month"]}
+          </h3>
         </CardHeader>
         <Divider />
         <CardBody className="pt-6">
           {/* @ts-ignore */}
           <ResponsiveContainer width="100%" height={300}>
             {/* @ts-ignore */}
-            <LineChart data={ordersMonthlyData} width={500} height={300}>
+            <LineChart data={chartData} width={500} height={300}>
               {/* @ts-ignore */}
               <CartesianGrid strokeDasharray="3 3" />
               {/* @ts-ignore */}
-              <XAxis dataKey="month" />
+              <XAxis dataKey="label" />
               {/* @ts-ignore */}
               <YAxis />
               {/* @ts-ignore */}
@@ -133,8 +140,6 @@ const ChartsSection: React.FC<ChartsSectionProps> = ({ charts }) => {
           </ResponsiveContainer>
         </CardBody>
       </Card>
-
-      {/* Order Status Breakdown */}
     </div>
   );
 };

@@ -5,7 +5,7 @@ import { fontSans } from "@/config/fonts";
 import clsx from "clsx";
 
 export const metadata: Metadata = {
-  title: "Tire Admin Dashboard",
+  title: "Admin | Tire Deals Dashboard",
   description: "Admin dashboard for tire ecommerce",
 };
 

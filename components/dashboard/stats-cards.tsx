@@ -16,10 +16,10 @@ const StatsCards: React.FC<StatsCardsProps> = ({ stats }) => {
       value: stats.totalUnreadContacts,
       icon: Mail,
       bgColor: "bg-white",
-      borderColor: "border-blue-200",
+      borderColor: "border-gray-200",
       iconColor: "text-blue-600",
       iconBg: "bg-blue-100",
-      textColor: "text-blue-700",
+      textColor: "text-black",
       description: "New contact messages",
     },
     {
@@ -27,10 +27,12 @@ const StatsCards: React.FC<StatsCardsProps> = ({ stats }) => {
       value: stats.totalDeliveredOrders,
       icon: PackageCheck,
       bgColor: "bg-white",
-      borderColor: "border-green-200",
-      iconColor: "text-green-600",
-      iconBg: "bg-green-100",
-      textColor: "text-green-700",
+           borderColor: "border-gray-200",
+
+      iconColor: "text-blue-600",
+      iconBg: "bg-blue-100",
+           textColor: "text-black",
+
       description: "Successfully delivered",
     },
     {
@@ -38,10 +40,12 @@ const StatsCards: React.FC<StatsCardsProps> = ({ stats }) => {
       value: `$${stats.totalRevenue.toFixed(2)}`,
       icon: DollarSign,
       bgColor: "bg-white",
-      borderColor: "border-orange-200",
-      iconColor: "text-orange-600",
-      iconBg: "bg-orange-100",
-      textColor: "text-orange-700",
+       borderColor: "border-gray-200",
+
+  iconColor: "text-blue-600",
+      iconBg: "bg-blue-100",
+        textColor: "text-black",
+
       description: "Total revenue generated",
     },
     {
@@ -49,10 +53,12 @@ const StatsCards: React.FC<StatsCardsProps> = ({ stats }) => {
       value: stats.totalProcessingOrders,
       icon: Clock,
       bgColor: "bg-white",
-      borderColor: "border-amber-200",
-      iconColor: "text-amber-600",
-      iconBg: "bg-amber-100",
-      textColor: "text-amber-700",
+      borderColor: "border-gray-200",
+
+   iconColor: "text-blue-600",
+      iconBg: "bg-blue-100",
+         textColor: "text-black",
+
       description: "Pending & shipped orders",
     },
   ];

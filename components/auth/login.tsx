@@ -24,7 +24,6 @@ function Login({ searchParams }: { searchParams: { error?: string } }) {
         if (result.error) {
           toast.error(result.error);
         } else {
-          // Token is already stored in cookies by the signIn action
           toast.success("Login successful");
           router.push("/dashboard");
         }
@@ -145,7 +144,7 @@ function Login({ searchParams }: { searchParams: { error?: string } }) {
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="inline-flex items-center  justify-center w-full px-4 my-7 py-4 text-base font-semibold text-white transition-all duration-200 border border-transparent rounded-xl bg-gradient-to-r from-[#05CB14] to-[#E55A00]  focus:outline-none hover:opacity-80 focus:opacity-80"
+                      className="inline-flex items-center  justify-center w-full px-4 my-7 py-4 text-base font-semibold text-white transition-all duration-200 border border-transparent rounded-xl bg-[#05CB14]   focus:outline-none hover:opacity-80 focus:opacity-80"
                     >
                       {loading ? (
                         <>

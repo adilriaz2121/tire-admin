@@ -20,14 +20,15 @@ export const NavbarWrapper = ({ children }: Props) => {
           wrapper: "w-full max-w-full",
         }}
       >
-        <Link href={"/dashboard"}>
+        <Link href={"/dashboard"} className="flex gap-1 text-black font-semibold text-xl">
           <Image
-            src={"/logo.png"}
-            alt="Bay DJ"
+            src={"/black.svg"}
+            alt="Tire Deals"
             height={40}
             width={40}
-            className="h-auto w-16"
+            className="h-auto w-10"
           />
+          Tire Deals
         </Link>
 
         <div className="flex items-center gap-x-4">
