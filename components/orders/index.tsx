@@ -12,7 +12,6 @@ import {
   Select,
   SelectItem,
   Button,
-  Input,
 } from "@nextui-org/react";
 import { Order, getAllOrders } from "@/actions/order.action";
 import { RenderCell } from "./render-cell";
@@ -31,6 +30,14 @@ interface OrdersProps {
   };
 }
 
+const statusTabs = [
+  { key: "", label: "All Orders", icon: "📦" },
+  { key: "confirmed", label: "Confirmed", icon: "✅" },
+  { key: "shipped", label: "Shipped", icon: "🚚" },
+  { key: "delivered", label: "Delivered", icon: "📬" },
+  { key: "cancelled", label: "Cancelled", icon: "❌" },
+];
+
 export const OrdersPage: React.FC<OrdersProps> = ({
   initialData = [],
   initialMeta,
@@ -46,11 +53,14 @@ export const OrdersPage: React.FC<OrdersProps> = ({
   const [loading, setLoading] = useState(false);
   const { searchParams, updateSearchParams } = useUpdateSearchParams();
 
+  const activeStatus = searchParams.get("status") || "";
+
   const columns = [
     { name: "CUSTOMER", uid: "name" },
     { name: "EMAIL", uid: "email" },
     { name: "AMOUNT", uid: "totalAmount" },
     { name: "STATUS", uid: "status" },
+    { name: "SHIPPING", uid: "shippingLocation" },
     { name: "TRACKING ID", uid: "trackingNumber" },
     { name: "DATE", uid: "createdAt" },
     { name: "ACTIONS", uid: "actions" },
@@ -70,14 +80,6 @@ export const OrdersPage: React.FC<OrdersProps> = ({
         limit: parseInt(searchParams.get("limit") || "10"),
         search: searchParams.get("search") || undefined,
         status,
-        dateFrom: searchParams.get("dateFrom") || undefined,
-        dateTo: searchParams.get("dateTo") || undefined,
-        minAmount: searchParams.get("minAmount")
-          ? parseFloat(searchParams.get("minAmount")!)
-          : undefined,
-        maxAmount: searchParams.get("maxAmount")
-          ? parseFloat(searchParams.get("maxAmount")!)
-          : undefined,
       };
 
       const response = await getAllOrders(params);
@@ -140,117 +142,43 @@ export const OrdersPage: React.FC<OrdersProps> = ({
     updateSearchParams({ search: search || undefined, page: "1" });
   };
 
-  const handleStatusFilter = (status: string) => {
+  const handleStatusTab = (status: string) => {
     updateSearchParams({ status: status || undefined, page: "1" });
-  };
-
-  const handleAmountFilter = (type: "min" | "max", value: string) => {
-    const key = type === "min" ? "minAmount" : "maxAmount";
-    updateSearchParams({ [key]: value || undefined, page: "1" });
-  };
-
-  const statusCounts = {
-    total: meta.total,
-    confirmed: orders.filter((order) => order.status === "confirmed").length,
-    shipped: orders.filter((order) => order.status === "shipped").length,
-    delivered: orders.filter((order) => order.status === "delivered").length,
-    cancelled: orders.filter((order) => order.status === "cancelled").length,
   };
 
   return (
     <div className="w-full flex flex-col gap-4">
-      {/* Filters */}
-      {/* Status Overview */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <div className="bg-gray-50 p-3 rounded-lg text-center">
-          <p className="text-2xl font-bold text-black">
-            {statusCounts.total}
-          </p>
-          <p className="text-sm text-black">Total Orders</p>
-        </div>
-        <div className="bg-gray-50 p-3 rounded-lg text-center">
-          <p className="text-2xl font-bold text-black">
-            {statusCounts.confirmed}
-          </p>
-          <p className="text-sm text-black">Confirmed</p>
-        </div>
-        <div className="bg-gray-50 p-3 rounded-lg text-center">
-          <p className="text-2xl font-bold text-black ">
-            {statusCounts.shipped}
-          </p>
-          <p className="text-sm text-black">Shipped</p>
-        </div>
-        <div className="bg-gray-50 p-3 rounded-lg text-center">
-          <p className="text-2xl font-bold text-black">
-            {statusCounts.delivered}
-          </p>
-          <p className="text-sm text-black">Delivered</p>
-        </div>
-        <div className="bg-gray-50 p-3 rounded-lg text-center">
-          <p className="text-2xl font-bold text-black">
-            {statusCounts.cancelled}
-          </p>
-          <p className="text-sm text-black">Cancelled</p>
-        </div>
-      </div>
-      <div className="flex flex-col gap-4">
-        {/* Search and Status Filter */}
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <SearchInput name="orders" callback={handleSearch} />
-          <Select
-            placeholder="Filter by status"
-            className="w-full"
-            selectedKeys={
-              searchParams.get("status") ? [searchParams.get("status")!] : []
-            }
-            onSelectionChange={(keys) => {
-              const status = Array.from(keys)[0] as string;
-              handleStatusFilter(status || "");
-            }}
+      {/* Status Tabs */}
+      <div className="flex gap-2 overflow-x-auto pb-1">
+        {statusTabs.map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => handleStatusTab(tab.key)}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
+              activeStatus === tab.key
+                ? "bg-black text-white shadow-md"
+                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+            }`}
           >
-            <SelectItem key="" value="">
-              All Status
-            </SelectItem>
-            <SelectItem key="confirmed" value="confirmed">
-              Confirmed
-            </SelectItem>
-            <SelectItem key="shipped" value="shipped">
-              Shipped
-            </SelectItem>
-            <SelectItem key="delivered" value="delivered">
-              Delivered
-            </SelectItem>
-            <SelectItem key="cancelled" value="cancelled">
-              Cancelled
-            </SelectItem>
-          </Select>
-        </div>
-
-        {/* Amount filters */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <Input
-            type="number"
-            placeholder="Min Amount"
-            className="w-full"
-            value={searchParams.get("minAmount") || ""}
-            onChange={(e) => handleAmountFilter("min", e.target.value)}
-          />
-          <Input
-            type="number"
-            placeholder="Max Amount"
-            className="w-full"
-            value={searchParams.get("maxAmount") || ""}
-            onChange={(e) => handleAmountFilter("max", e.target.value)}
-          />
-        </div>
+            <span>{tab.label}</span>
+            {tab.key === "" && (
+              <span className={`ml-1 text-xs px-1.5 py-0.5 rounded-full ${
+                activeStatus === tab.key ? "bg-white/20" : "bg-gray-200"
+              }`}>
+                {meta.total}
+              </span>
+            )}
+          </button>
+        ))}
       </div>
 
+      {/* Search */}
+      <SearchInput name="orders" callback={handleSearch} />
 
-
+      {/* Table controls */}
       <div className="flex justify-between items-center">
         <span className="text-default-400 text-small">
-          Total {meta.total} orders
+          {meta.total} orders {activeStatus ? `(${activeStatus})` : ""}
         </span>
         <div className="flex items-center gap-2">
           <label className="flex items-center text-default-400 text-small">

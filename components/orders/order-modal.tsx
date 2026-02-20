@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Modal,
   ModalContent,
@@ -11,7 +11,7 @@ import {
   Chip,
   Divider,
 } from "@nextui-org/react";
-import { Order, updateOrderStatus } from "@/actions/order.action";
+import { Order, updateOrderStatus, getInstallerDetails } from "@/actions/order.action";
 import { toast } from "sonner";
 
 interface OrderModalProps {
@@ -32,6 +32,24 @@ export const OrderModal: React.FC<OrderModalProps> = ({
   onRefresh,
 }) => {
   const [loading, setLoading] = useState(false);
+  const [installerInfo, setInstallerInfo] = useState<any>(null);
+
+  // Fetch installer details if order has an installerId
+  useEffect(() => {
+    if (order.installerId && (order.shippingLocation === 'LocalInstaller' || order.shippingLocation === 'MobileInstaller')) {
+      getInstallerDetails(order.installerId)
+        .then((res) => {
+          if (res.success && res.data) {
+            setInstallerInfo(res.data);
+          }
+        })
+        .catch(() => {
+          // Silently fail - installer name is still shown from order data
+        });
+    } else {
+      setInstallerInfo(null);
+    }
+  }, [order.installerId, order.shippingLocation]);
 
   const handleStatusUpdate = async (newStatus: "shipped" | "cancelled") => {
     if (newStatus === order.status) return;
@@ -326,6 +344,66 @@ export const OrderModal: React.FC<OrderModalProps> = ({
                     </div>
                   </div>
                 </div>
+
+                {/* Installer Information - Show for Local/Mobile Installer */}
+                {(order.shippingLocation === 'LocalInstaller' || order.shippingLocation === 'MobileInstaller') && (
+                  <>
+                    <Divider />
+                    <div>
+                      <h4 className="text-lg font-semibold mb-3">
+                        {order.shippingLocation === 'MobileInstaller' ? 'Mobile Installer' : 'Local Installer'}
+                      </h4>
+                      {installerInfo ? (
+                        <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                          <div className="flex gap-4">
+                            {installerInfo.image_url && (
+                              <img
+                                src={installerInfo.image_url}
+                                alt={installerInfo.name}
+                                className="w-20 h-20 rounded-lg object-cover border border-purple-300"
+                              />
+                            )}
+                            <div className="flex-1">
+                              <p className="text-base font-semibold text-purple-900">{installerInfo.name}</p>
+                              {installerInfo.rating && (
+                                <p className="text-sm text-purple-700">
+                                  Rating: {installerInfo.rating} / 5 ({installerInfo.review_count} reviews)
+                                </p>
+                              )}
+                              {installerInfo.display_phone && (
+                                <p className="text-sm text-gray-600">Phone: {installerInfo.display_phone}</p>
+                              )}
+                              {installerInfo.location && (
+                                <p className="text-sm text-gray-600">
+                                  {installerInfo.location.display_address?.join(', ')}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                          {order.appointmentDate && (
+                            <div className="mt-3 bg-white rounded p-2 border border-purple-100">
+                              <label className="text-sm font-semibold text-purple-700">Appointment Date</label>
+                              <p className="text-base">{new Date(order.appointmentDate).toLocaleString()}</p>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                          <p className="text-base font-medium">{order.installerName || 'Unknown Installer'}</p>
+                          {order.installerId && (
+                            <p className="text-sm text-gray-500 font-mono">ID: {order.installerId}</p>
+                          )}
+                          {order.appointmentDate && (
+                            <div className="mt-2">
+                              <label className="text-sm font-semibold text-gray-600">Appointment Date</label>
+                              <p className="text-base">{new Date(order.appointmentDate).toLocaleString()}</p>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
 
                 <Divider />
 

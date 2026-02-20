@@ -102,6 +102,25 @@ export const RenderCell: React.FC<RenderCellProps> = ({
         </Chip>
       );
 
+    case "shippingLocation":
+      const shippingLabels: Record<string, { label: string; color: string }> = {
+        MobileInstaller: { label: "Mobile Installer", color: "bg-purple-100 text-purple-800" },
+        LocalInstaller: { label: "Local Installer", color: "bg-blue-100 text-blue-800" },
+        ShipToMe: { label: "Ship to Me", color: "bg-green-100 text-green-800" },
+        FedExPickup: { label: "FedEx Pickup", color: "bg-orange-100 text-orange-800" },
+      };
+      const shipping = shippingLabels[order.shippingLocation] || { label: "N/A", color: "bg-gray-100 text-gray-800" };
+      return (
+        <div className="flex flex-col">
+          <span className={`text-xs font-medium px-2 py-1 rounded-full inline-block w-fit ${shipping.color}`}>
+            {shipping.label}
+          </span>
+          {order.installerName && (
+            <p className="text-tiny text-default-400 mt-1">{order.installerName}</p>
+          )}
+        </div>
+      );
+
     case "trackingNumber":
       return order.trackingNumber ? (
         <p className="text-bold text-small font-mono">

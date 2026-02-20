@@ -37,6 +37,9 @@ export interface Order {
   trackingNumber?: string | null;
   status: 'confirmed' | 'shipped' | 'delivered' | 'cancelled';
   shippingLocation: 'MobileInstaller' | 'LocalInstaller' | 'ShipToMe' | 'FedExPickup';
+  installerId?: string | null;
+  installerName?: string | null;
+  appointmentDate?: string | null;
   orderItems: OrderItem[];
   createdAt: string | null;
   updatedAt: string | null;
@@ -161,6 +164,16 @@ export const shipOrder = async (
     console.error("Error shipping order:", error);
     const message = error?.response?.data?.error || "Failed to create FedEx shipment";
     throw new Error(message);
+  }
+};
+
+export const getInstallerDetails = async (installerId: string): Promise<{ success: boolean; data: any }> => {
+  try {
+    const response = await axiosInstance.get(`/api/user/yelp/businesses/${installerId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching installer details:", error);
+    throw error;
   }
 };
 
