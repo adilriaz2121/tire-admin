@@ -102,6 +102,15 @@ export const RenderCell: React.FC<RenderCellProps> = ({
         </Chip>
       );
 
+    case "trackingNumber":
+      return order.trackingNumber ? (
+        <p className="text-bold text-small font-mono">
+          {order.trackingNumber}
+        </p>
+      ) : (
+        <span className="text-default-400">-</span>
+      );
+
     case "createdAt":
       if (!order.createdAt) return <span className="text-default-400">N/A</span>;
       return (

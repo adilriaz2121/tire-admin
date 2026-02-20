@@ -17,6 +17,7 @@ import {
 import { Order, getAllOrders } from "@/actions/order.action";
 import { RenderCell } from "./render-cell";
 import { OrderModal } from "./order-modal";
+import { ShipOrderModal } from "./ship-order-modal";
 import SearchInput from "../search-input";
 import useUpdateSearchParams from "@/components/hooks/useTableSearchParams";
 
@@ -40,15 +41,17 @@ export const OrdersPage: React.FC<OrdersProps> = ({
   );
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isShipModalOpen, setIsShipModalOpen] = useState(false);
+  const [orderToShip, setOrderToShip] = useState<Order | null>(null);
   const [loading, setLoading] = useState(false);
   const { searchParams, updateSearchParams } = useUpdateSearchParams();
 
   const columns = [
-    { name: "ORDER ID", uid: "id" },
     { name: "CUSTOMER", uid: "name" },
     { name: "EMAIL", uid: "email" },
     { name: "AMOUNT", uid: "totalAmount" },
     { name: "STATUS", uid: "status" },
+    { name: "TRACKING ID", uid: "trackingNumber" },
     { name: "DATE", uid: "createdAt" },
     { name: "ACTIONS", uid: "actions" },
   ];
@@ -58,7 +61,7 @@ export const OrdersPage: React.FC<OrdersProps> = ({
     try {
       const statusParam = searchParams.get("status");
       const validStatuses: Array<'confirmed' | 'shipped' | 'delivered' | 'cancelled'> = ['confirmed', 'shipped', 'delivered', 'cancelled'];
-      const status = statusParam && validStatuses.includes(statusParam as any) 
+      const status = statusParam && validStatuses.includes(statusParam as any)
         ? (statusParam as 'confirmed' | 'shipped' | 'delivered' | 'cancelled')
         : undefined;
 
@@ -117,6 +120,14 @@ export const OrdersPage: React.FC<OrdersProps> = ({
     setIsModalOpen(true);
   };
 
+  const handleShipOrder = (order: Order) => {
+    setIsModalOpen(false);
+    setSelectedOrder(null);
+    setIsEditMode(false);
+    setOrderToShip(order);
+    setIsShipModalOpen(true);
+  };
+
   const handlePageChange = (page: number) => {
     updateSearchParams({ page: page.toString() });
   };
@@ -149,8 +160,42 @@ export const OrdersPage: React.FC<OrdersProps> = ({
   return (
     <div className="w-full flex flex-col gap-4">
       {/* Filters */}
+      {/* Status Overview */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <div className="bg-gray-50 p-3 rounded-lg text-center">
+          <p className="text-2xl font-bold text-black">
+            {statusCounts.total}
+          </p>
+          <p className="text-sm text-black">Total Orders</p>
+        </div>
+        <div className="bg-gray-50 p-3 rounded-lg text-center">
+          <p className="text-2xl font-bold text-black">
+            {statusCounts.confirmed}
+          </p>
+          <p className="text-sm text-black">Confirmed</p>
+        </div>
+        <div className="bg-gray-50 p-3 rounded-lg text-center">
+          <p className="text-2xl font-bold text-black ">
+            {statusCounts.shipped}
+          </p>
+          <p className="text-sm text-black">Shipped</p>
+        </div>
+        <div className="bg-gray-50 p-3 rounded-lg text-center">
+          <p className="text-2xl font-bold text-black">
+            {statusCounts.delivered}
+          </p>
+          <p className="text-sm text-black">Delivered</p>
+        </div>
+        <div className="bg-gray-50 p-3 rounded-lg text-center">
+          <p className="text-2xl font-bold text-black">
+            {statusCounts.cancelled}
+          </p>
+          <p className="text-sm text-black">Cancelled</p>
+        </div>
+      </div>
       <div className="flex flex-col gap-4">
         {/* Search and Status Filter */}
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <SearchInput name="orders" callback={handleSearch} />
           <Select
@@ -201,39 +246,7 @@ export const OrdersPage: React.FC<OrdersProps> = ({
         </div>
       </div>
 
-      {/* Status Overview */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <div className="bg-orange-50 p-3 rounded-lg text-center">
-          <p className="text-2xl font-bold text-[#05CB14]">
-            {statusCounts.total}
-          </p>
-          <p className="text-sm text-[#05CB14]">Total Orders</p>
-        </div>
-        <div className="bg-yellow-50 p-3 rounded-lg text-center">
-          <p className="text-2xl font-bold text-yellow-600">
-            {statusCounts.confirmed}
-          </p>
-          <p className="text-sm text-yellow-600">Confirmed</p>
-        </div>
-        <div className="bg-orange-50 p-3 rounded-lg text-center">
-          <p className="text-2xl font-bold text-orange-600">
-            {statusCounts.shipped}
-          </p>
-          <p className="text-sm text-orange-600">Shipped</p>
-        </div>
-        <div className="bg-green-50 p-3 rounded-lg text-center">
-          <p className="text-2xl font-bold text-green-600">
-            {statusCounts.delivered}
-          </p>
-          <p className="text-sm text-green-600">Delivered</p>
-        </div>
-        <div className="bg-red-50 p-3 rounded-lg text-center">
-          <p className="text-2xl font-bold text-red-600">
-            {statusCounts.cancelled}
-          </p>
-          <p className="text-sm text-red-600">Cancelled</p>
-        </div>
-      </div>
+
 
       <div className="flex justify-between items-center">
         <span className="text-default-400 text-small">
@@ -333,6 +346,19 @@ export const OrdersPage: React.FC<OrdersProps> = ({
             setIsModalOpen(false);
             setSelectedOrder(null);
             setIsEditMode(false);
+          }}
+          onShipOrder={handleShipOrder}
+          onRefresh={fetchOrders}
+        />
+      )}
+
+      {orderToShip && (
+        <ShipOrderModal
+          order={orderToShip}
+          isOpen={isShipModalOpen}
+          onClose={() => {
+            setIsShipModalOpen(false);
+            setOrderToShip(null);
           }}
           onRefresh={fetchOrders}
         />

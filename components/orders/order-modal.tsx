@@ -19,6 +19,7 @@ interface OrderModalProps {
   isOpen: boolean;
   isEditMode?: boolean;
   onClose: () => void;
+  onShipOrder: (order: Order) => void;
   onRefresh: () => void;
 }
 
@@ -27,6 +28,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
   isOpen,
   isEditMode = false,
   onClose,
+  onShipOrder,
   onRefresh,
 }) => {
   const [loading, setLoading] = useState(false);
@@ -373,7 +375,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
                         </div>
                       </div>
                     )}
-                    
+
                     {(!order.discount || order.discount === 0) && (
                       <div>
                         <label className="text-sm font-semibold text-gray-600">
@@ -384,7 +386,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
                         </p>
                       </div>
                     )}
-                    
+
                     <div>
                       <label className="text-sm font-semibold text-gray-600">
                         Shipping Location
@@ -393,7 +395,20 @@ export const OrderModal: React.FC<OrderModalProps> = ({
                         {order.shippingLocation?.replace(/([A-Z])/g, ' $1').trim() || 'N/A'}
                       </p>
                     </div>
-                    
+
+                    {order.trackingNumber && (
+                      <div className="md:col-span-2">
+                        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                          <label className="text-sm font-semibold text-green-700">
+                            FedEx Tracking Number
+                          </label>
+                          <p className="text-lg font-bold font-mono text-green-800 mt-1">
+                            {order.trackingNumber}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
                     {order.couponCode && (!order.discount || order.discount === 0) && (
                       <div>
                         <label className="text-sm font-semibold text-gray-600">
@@ -404,7 +419,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
                         </p>
                       </div>
                     )}
-                    
+
                     {order.paymentIntentId && (
                       <div>
                         <label className="text-sm font-semibold text-gray-600">
@@ -444,18 +459,15 @@ export const OrderModal: React.FC<OrderModalProps> = ({
               <Button color="danger" variant="flat" onPress={onClose}>
                 Close
               </Button>
-              {isEditMode && order.status !== "delivered" && order.status !== "cancelled" && (
+              {isEditMode && order.status === "confirmed" && (
                 <>
-                  {order.status === "confirmed" && (
-                    <Button
-                      color="primary"
-                      onPress={() => handleStatusUpdate("shipped")}
-                      isLoading={loading}
-                      isDisabled={loading}
-                    >
-                      Ship Order
-                    </Button>
-                  )}
+                  <Button
+                    color="primary"
+                    onPress={() => onShipOrder(order)}
+                    isDisabled={loading}
+                  >
+                    Ship Order
+                  </Button>
                   <Button
                     color="danger"
                     onPress={() => handleStatusUpdate("cancelled")}

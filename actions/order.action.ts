@@ -34,6 +34,7 @@ export interface Order {
   country: string;
   discount?: number | null;
   couponCode?: string | null;
+  trackingNumber?: string | null;
   status: 'confirmed' | 'shipped' | 'delivered' | 'cancelled';
   shippingLocation: 'MobileInstaller' | 'LocalInstaller' | 'ShipToMe' | 'FedExPickup';
   orderItems: OrderItem[];
@@ -147,6 +148,19 @@ export const updateOrderStatus = async (id: string, status: 'confirmed' | 'shipp
   } catch (error) {
     console.error("Error updating order status:", error);
     throw error;
+  }
+};
+
+export const shipOrder = async (
+  id: string
+): Promise<{ success: boolean; message: string; data: { order: Order; trackingNumber: string } }> => {
+  try {
+    const response = await axiosInstance.post(`/api/orders/${id}/ship`);
+    return response.data;
+  } catch (error: any) {
+    console.error("Error shipping order:", error);
+    const message = error?.response?.data?.error || "Failed to create FedEx shipment";
+    throw new Error(message);
   }
 };
 
