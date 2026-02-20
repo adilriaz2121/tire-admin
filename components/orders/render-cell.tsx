@@ -5,6 +5,7 @@ import { Chip, Button } from "@nextui-org/react";
 import { Order } from "@/actions/order.action";
 import { EyeIcon } from "../icons/table/eye-icon";
 import { EditIcon } from "../icons/table/edit-icon";
+import { ExternalLink } from "lucide-react";
 
 interface RenderCellProps {
   order: Order;
@@ -123,9 +124,15 @@ export const RenderCell: React.FC<RenderCellProps> = ({
 
     case "trackingNumber":
       return order.trackingNumber ? (
-        <p className="text-bold text-small font-mono">
+        <a
+          href={`https://www.fedex.com/fedextrack/?trknbr=${order.trackingNumber}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1.5 text-blue-600 hover:text-blue-800 hover:underline text-small font-mono"
+        >
           {order.trackingNumber}
-        </p>
+          <ExternalLink className="w-3 h-3 flex-shrink-0" />
+        </a>
       ) : (
         <span className="text-default-400">-</span>
       );
